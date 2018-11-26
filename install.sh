@@ -65,10 +65,10 @@ function install_git() {
 
 function configure_aliases() {
     echo "Configuring Aliases..."
-    echo "alias docker-stop='docker stop $(docker ps -a -q)'
-alias docker-remove=docker rm -f $(docker ps -a -q) && docker rmi -f $(docker images -q) && docker volume rm $(docker volume ls -f \"dangling=true\")'
-alias pbcopy=\"xclip -selection clipboard\"
-alias pbpaste=\"xclip -selection clipboard -o\"" > ~/.bash_aliases
+    echo 'alias docker-stop="docker stop $(docker ps -a -q)"
+    alias docker-remove="docker rm -f $(docker ps -a -q) && docker rmi -f $(docker images -q) && docker volume rm $(docker volume ls -f 'dangling=true')"
+    alias pbcopy="xclip -selection clipboard"
+    alias pbpaste="xclip -selection clipboard -o"' > ~/.bash_aliases
 }
 
 function configure_git() {
