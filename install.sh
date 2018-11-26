@@ -38,7 +38,9 @@ function install_libraries() {
                             openvpn \
                             openssh-client \
                             openssh-server \
-                            zip
+                            zip \
+			    unzip \
+			    sed
 }
 
 function install_utilities() {
@@ -111,7 +113,7 @@ function install_skdman() {
     sdk install maven 3.6.0
     sdk install gradle 4.10.2
     sdk install kotlin 1.2.70
-    sdk install springboot
+    sdk install springboot 2.1.0.RELEASE
 }
 
 function install_nvm() {
@@ -127,8 +129,9 @@ function install_nvm() {
     fi
 
     if ! [ -x "$(command -v node)" ]; then
-        echo "Installing node through nvm"
-        nvm install node
+	NODE_VERSION="v11.2.0"
+        echo "Installing node $NODE_VERSION through nvm"
+        nvm install node $NODE_VERSION
     else
         echo "Node is already installed"
     fi

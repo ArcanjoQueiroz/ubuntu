@@ -22,7 +22,7 @@ This script installs the following:
 * Kotlin 1.2.70
 * Gradle 4.10.2
 * Spring Boot CLI 2.1.0.RELEASE
-* Node.js
+* Node.js v11.2.0
 * Docker CE
 * Docker-Compose 1.23.1
 * Python 3.7
