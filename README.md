@@ -14,6 +14,7 @@ This script installs the following:
 
 * Snap
 * Terminator
+* Vim
 * Git
 * Meld
 * Java 9.0.7-zulu
