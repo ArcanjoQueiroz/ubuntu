@@ -9,7 +9,7 @@ function preparing_installation() {
         CURRENT_USER="$USER"
     fi 
     export CURRENT_USER
-    echo "Current user $CURRENT_USER"
+    echo "Current user is $CURRENT_USER"
 
     if ! [ -x "$(command -v sudo)" ]; then
         apt-get update && apt-get install sudo
@@ -40,14 +40,14 @@ function install_libraries() {
                             openssh-server \
                             zip \
 			    unzip \
-			    sed
+			    sed \
+			    curl \
+			    wget
 }
 
 function install_utilities() {
     echo "Installing Utilities..."
-    sudo apt-get install -y curl \
-                            xclip \
-                            wget \
+    sudo apt-get install -y xclip \
                             htop \
                             terminator \
                             vim \
@@ -140,8 +140,8 @@ function install_nvm() {
 function install_docker() {
     if ! [ -x "$(command -v docker)" ]; then
         echo "Installing Docker..."
-        curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
         sudo apt-get update && sudo apt-get install -y docker-ce && sudo usermod -aG docker $CURRENT_USER
     else
         echo "Docker is already installed"
