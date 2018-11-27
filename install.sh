@@ -65,10 +65,23 @@ function install_git() {
 
 function configure_aliases() {
     echo "Configuring Aliases..."
-    echo 'alias docker-stop="docker stop $(docker ps -a -q)"
-    alias docker-remove="docker rm -f $(docker ps -a -q) && docker rmi -f $(docker images -q) && docker volume rm $(docker volume ls -f 'dangling=true')"
-    alias pbcopy="xclip -selection clipboard"
-    alias pbpaste="xclip -selection clipboard -o"' > ~/.bash_aliases
+    echo '# Functions
+
+function docker-remove() {
+    CONTAINER_IDS=$(docker ps -a -q)
+    IMAGE_IDS=$(docker images -q)
+    VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1)
+    NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }")
+
+    ! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS
+    ! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS
+    ! [ -z $VOLUMES ] && docker volume rm $VOLUMES
+    ! [ -z $NETWORKS ] && docker network rm $NETWORKS
+}
+
+# Aliases
+alias pbcopy="xclip -selection clipboard"
+alias pbpaste="xclip -selection clipboard -o"' > ~/.bash_aliases
 }
 
 function configure_git() {
@@ -178,25 +191,12 @@ function install_python3() {
 
 function install_ides() {
     echo "Installing IDEs..."
-    install_code && \
-    install_idea && \
-	install_android_studio && \
-	install_eclipse
-}
-
-function install_code() {
-    echo "Installing VSCode..."
-    sudo snap install vscode --classic
+    install_idea && install_android_studio
 }
 
 function install_idea() {
     echo "Installing IDea..."
     sudo snap install intellij-idea-community --classic
-}
-
-function install_eclipse() {
-    echo "Installing Eclipse..."
-    sudo snap install eclipse --classic
 }
 
 function install_android_studio() {
