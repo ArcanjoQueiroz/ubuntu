@@ -39,10 +39,10 @@ function install_libraries() {
                             openssh-client \
                             openssh-server \
                             zip \
-			    unzip \
-			    sed \
-			    curl \
-			    wget
+			                unzip \
+			                sed \
+			                curl \
+			                wget
 }
 
 function install_utilities() {
@@ -107,8 +107,13 @@ package.lock
 }
 
 function install_skdman() {
-    echo "Installing SDKMan..."
-    curl -s "https://get.sdkman.io" | bash && source "$HOME/.sdkman/bin/sdkman-init.sh"
+    if ! [ -x "$SDKMAN_DIR" ]; then
+        echo "Installing SDKMan..."
+        curl -s "https://get.sdkman.io" | bash && source "$HOME/.sdkman/bin/sdkman-init.sh"
+    else 
+        echo "SKDMan is already installed"
+        [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+    fi
     sdk install java 9.0.7-zulu
     sdk install maven 3.6.0
     sdk install gradle 4.10.2
@@ -117,7 +122,7 @@ function install_skdman() {
 }
 
 function install_nvm() {
-    if ! [ -x "$(command -v nvm)" ]; then
+    if ! [ -x "$NVM_DIR" ]; then
         NVM_VERSION="v0.33.11"
         echo "Installing NVM $NVM_VERSION"
         curl -o- "https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh" | bash && source ~/.bashrc 
@@ -129,7 +134,7 @@ function install_nvm() {
     fi
 
     if ! [ -x "$(command -v node)" ]; then
-	NODE_VERSION="v11.2.0"
+	    NODE_VERSION="v11.2.0"
         echo "Installing node $NODE_VERSION through nvm"
         nvm install node $NODE_VERSION
     else
@@ -167,8 +172,36 @@ function install_python3() {
                             python3-pip \
                             python3-virtualenv \
                             python3-setuptools && \
-    python3.7 -m pip install -U pip setuptools wheel --user && \
-	python3.7 -m pip install -U "pylint<2.0.0" --user
+                            python3.7 -m pip install -U pip setuptools wheel --user && \
+	                        python3.7 -m pip install -U "pylint<2.0.0" --user
+}
+
+function install_ides() {
+    echo "Installing IDEs..."
+    install_code && \
+    install_idea && \
+	install_android_studio && \
+	install_eclipse
+}
+
+function install_code() {
+    echo "Installing VSCode..."
+    sudo snap install vscode --classic
+}
+
+function install_idea() {
+    echo "Installing IDea..."
+    sudo snap install intellij-idea-community --classic
+}
+
+function install_eclipse() {
+    echo "Installing Eclipse..."
+    sudo snap install eclipse --classic
+}
+
+function install_android_studio() {
+    echo "Installing Android Studio..."
+    sudo snap install android-studio --classic
 }
 
 function main() {
@@ -181,9 +214,12 @@ function main() {
               install_nvm && \
               install_python3 && \
               install_docker && \
-              install_docker_compose &&
+              install_docker_compose && \
               configure_git && \
               configure_aliases
+
+    ! [ -z "$INCLUDE_IDE" ] && install_ides
+    
     echo "Installation was finished. Happy coding...!!!"
 }
 
