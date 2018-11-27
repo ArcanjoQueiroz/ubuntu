@@ -1,4 +1,4 @@
-## Ubuntu Install Script
+## Ubuntu Installation Script
 
 This project is a shell script to install utilities, programming languages and binaries in Ubuntu **18.04.1 LTS** in one command!!!
 
