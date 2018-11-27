@@ -195,7 +195,7 @@ function install_ides() {
 }
 
 function install_idea() {
-    echo "Installing IDea..."
+    echo "Installing Idea..."
     sudo snap install intellij-idea-community --classic
 }
 

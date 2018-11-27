@@ -4,8 +4,16 @@ This project is a shell script to install utilities, programming languages and b
 
 ### Install
 
+The following example shows how to use the installation script:
+
 ```sh
 curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
+```
+
+If you want to install Intellij IDEA Community Editon and Android Studio, set the INCLUDE_IDE variable in your command:
+
+```sh
+curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | INCLUDE_IDE=y bash
 ```
 
 ### What does install.sh install?
@@ -27,6 +35,11 @@ This script installs the following:
 * Docker-Compose 1.23.1
 * Python 3.7
 * GCC 7
+
+And the IDEs:
+
+* IntelliJ IDEA Community Edition
+* Android Studio
 
 ### License
 
