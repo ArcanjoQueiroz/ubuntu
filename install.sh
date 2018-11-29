@@ -155,6 +155,28 @@ function install_nvm() {
     fi
 }
 
+function configure_vim() {
+    echo "Configuring vim..."
+    echo "
+syntax enable
+
+set autoindent
+set smartindent
+
+set number
+set encoding=utf-8
+
+set ignorecase
+set hlsearch
+set incsearch
+
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab" > ~/.vimrc
+}
+
 function install_docker() {
     if ! [ -x "$(command -v docker)" ]; then
         echo "Installing Docker..."
@@ -216,7 +238,8 @@ function main() {
               install_docker && \
               install_docker_compose && \
               configure_git && \
-              configure_aliases
+              configure_aliases && \
+	      configure_vim
 
     ! [ -z "$INCLUDE_IDE" ] && install_ides
     
