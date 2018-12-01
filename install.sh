@@ -39,10 +39,10 @@ function install_libraries() {
                             openssh-client \
                             openssh-server \
                             zip \
-			                unzip \
-			                sed \
-			                curl \
-			                wget
+                            unzip \
+                            sed \
+                            curl \
+                            wget
 }
 
 function install_utilities() {
@@ -65,9 +65,7 @@ function install_git() {
 
 function configure_aliases() {
     echo "Configuring Aliases..."
-    echo '# Functions
-
-function docker-remove() {
+    echo 'function docker-remove() {
     CONTAINER_IDS=$(docker ps -a -q)
     IMAGE_IDS=$(docker images -q)
     VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1)
@@ -79,7 +77,6 @@ function docker-remove() {
     ! [ -z $NETWORKS ] && docker network rm $NETWORKS
 }
 
-# Aliases
 alias pbcopy="xclip -selection clipboard"
 alias pbpaste="xclip -selection clipboard -o"' > ~/.bash_aliases
 }
@@ -147,7 +144,7 @@ function install_nvm() {
     fi
 
     if ! [ -x "$(command -v node)" ]; then
-	    NODE_VERSION="v11.2.0"
+        NODE_VERSION="v11.2.0"
         echo "Installing node $NODE_VERSION through nvm"
         nvm install node $NODE_VERSION
     else
@@ -157,9 +154,7 @@ function install_nvm() {
 
 function configure_vim() {
     echo "Configuring vim..."
-    echo "
-syntax enable
-
+    echo "syntax enable
 set autoindent
 set smartindent
 
@@ -170,11 +165,10 @@ set ignorecase
 set hlsearch
 set incsearch
 
-set expandtab
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set expandtab" > ~/.vimrc
+autocmd FileType html,css,ruby,javascript setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType java,python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
+autocmd FileType make setlocal noexpandtab
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab" > ~/.vimrc
 }
 
 function install_docker() {
@@ -208,7 +202,7 @@ function install_python3() {
                             python3-virtualenv \
                             python3-setuptools && \
                             python3.7 -m pip install -U pip setuptools wheel --user && \
-	                        python3.7 -m pip install -U "pylint<2.0.0" --user
+                            python3.7 -m pip install -U "pylint<2.0.0" --user
 }
 
 function install_ides() {
@@ -228,20 +222,38 @@ function install_android_studio() {
 
 function main() {
     echo "Starting installation..."
-    preparing_installation && \
-              install_libraries && \
-              install_utilities && \
-              install_git && \
-              install_skdman && \
-              install_nvm && \
-              install_python3 && \
-              install_docker && \
-              install_docker_compose && \
-              configure_git && \
-              configure_aliases && \
-	      configure_vim
+   
+    if [ -z "$INCLUDE_INSTALLATION" ]; then
+        INCLUDE_INSTALLATION="y"
+    fi
 
-    ! [ -z "$INCLUDE_IDE" ] && install_ides
+    if [ -z "$INCLUDE_CONFIGURATION" ]; then
+        INCLUDE_CONFIGURATION="y"
+    fi
+
+    if [ -z "$INCLUDE_IDE" ]; then
+        INCLUDE_IDE="n"
+    fi	    
+
+    preparing_installation 
+
+    [ $INCLUDE_INSTALLATION == "y" ] && \
+        install_libraries && \
+        install_utilities && \
+        install_git && \
+        install_skdman && \
+        install_nvm && \
+        install_python3 && \
+        install_docker && \
+        install_docker_compose 
+          
+    [ $INCLUDE_CONFIGURATION == "y" ] && \
+        configure_git && \
+        configure_aliases && \
+        configure_vim
+
+    [ $INCLUDE_IDE == "y" ] && \
+        install_ides
     
     echo "Installation was finished. Happy coding...!!!"
 }
