@@ -40,6 +40,7 @@ And the IDEs:
 
 * IntelliJ IDEA Community Edition
 * Android Studio
+* Vim GTK
 
 ### License
 

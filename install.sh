@@ -5,18 +5,18 @@ function preparing_installation() {
 
     if [ -z "$USER" ]; then
         CURRENT_USER=$(id -un)
-    else   
+    else
         CURRENT_USER="$USER"
-    fi 
+    fi
     export CURRENT_USER
     echo "Current user is $CURRENT_USER"
 
     if ! [ -x "$(command -v sudo)" ]; then
         apt-get update && apt-get install sudo
-    else 
+    else
         echo "Updating definitions..."
         sudo apt-get update
-    fi   
+    fi
 }
 
 function install_libraries() {
@@ -116,11 +116,11 @@ package.lock
     git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 }
 
-function install_skdman() {
+function install_sdkman() {
     if ! [ -x "$SDKMAN_DIR" ]; then
         echo "Installing SDKMan..."
         curl -s "https://get.sdkman.io" | bash && source "$HOME/.sdkman/bin/sdkman-init.sh"
-    else 
+    else
         echo "SKDMan is already installed"
         [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
     fi
@@ -135,7 +135,7 @@ function install_nvm() {
     if ! [ -x "$NVM_DIR" ]; then
         NVM_VERSION="v0.33.11"
         echo "Installing NVM $NVM_VERSION"
-        curl -o- "https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh" | bash && source ~/.bashrc 
+        curl -o- "https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh" | bash && source ~/.bashrc
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
@@ -154,7 +154,8 @@ function install_nvm() {
 
 function configure_vim() {
     echo "Configuring vim..."
-    echo "syntax enable
+    echo 'syntax enable
+
 set autoindent
 set smartindent
 
@@ -165,10 +166,14 @@ set ignorecase
 set hlsearch
 set incsearch
 
+"Define spaces size according to the file type
 autocmd FileType html,css,ruby,javascript setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType java,python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
 autocmd FileType make setlocal noexpandtab
-autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab" > ~/.vimrc
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+"Automatically removing all trailing whitespace
+autocmd FileType ruby,javascript,java,python,bash,sh autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
 }
 
 function install_docker() {
@@ -205,11 +210,6 @@ function install_python3() {
                             python3.7 -m pip install -U "pylint<2.0.0" --user
 }
 
-function install_ides() {
-    echo "Installing IDEs..."
-    install_idea && install_android_studio
-}
-
 function install_idea() {
     echo "Installing Idea..."
     sudo snap install intellij-idea-community --classic
@@ -220,9 +220,14 @@ function install_android_studio() {
     sudo snap install android-studio --classic
 }
 
+function install_vim_gtk() {
+    echo "Installing Vim GTK..."
+    sudo apt-get install vim-gtk
+}
+
 function main() {
     echo "Starting installation..."
-   
+
     if [ -z "$INCLUDE_INSTALLATION" ]; then
         INCLUDE_INSTALLATION="y"
     fi
@@ -233,28 +238,30 @@ function main() {
 
     if [ -z "$INCLUDE_IDE" ]; then
         INCLUDE_IDE="n"
-    fi	    
+    fi
 
-    preparing_installation 
+    preparing_installation
 
     [ $INCLUDE_INSTALLATION == "y" ] && \
         install_libraries && \
         install_utilities && \
         install_git && \
-        install_skdman && \
+        install_sdkman && \
         install_nvm && \
         install_python3 && \
         install_docker && \
-        install_docker_compose 
-          
+        install_docker_compose
+
     [ $INCLUDE_CONFIGURATION == "y" ] && \
         configure_git && \
         configure_aliases && \
         configure_vim
 
     [ $INCLUDE_IDE == "y" ] && \
-        install_ides
-    
+        install_idea && \
+        install_android_studio && \
+        install_vim_gtk
+
     echo "Installation was finished. Happy coding...!!!"
 }
 
