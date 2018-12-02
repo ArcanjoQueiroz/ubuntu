@@ -173,7 +173,7 @@ autocmd FileType make setlocal noexpandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 "Automatically removing all trailing whitespace
-autocmd FileType ruby,javascript,java,python,bash,sh autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
+autocmd FileType ruby,javascript,java,python,bash,sh,html,css,yaml,make autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
 }
 
 function install_docker() {
