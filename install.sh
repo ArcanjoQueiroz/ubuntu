@@ -225,20 +225,35 @@ function install_vim_gtk() {
     sudo apt-get install vim-gtk
 }
 
+function is_valid_os() {
+    DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
+    VERSION_ID=$(cat /etc/os-release | grep "^VERSION_ID=" | cut -d '=' -f 2)
+
+    echo "Target Distribution: $DISTRIB_ID"
+    echo "Target Version: $VERSION_ID"
+
+    MINT="n"; UBUNTU="n"
+    [ $DISTRIB_ID == "linuxmint" ] && [ $VERSION_ID == \""19\"" ] && MINT="y"
+    [ $DISTRIB_ID == "ubuntu" ] && [ $VERSION_ID == \""18.04\"" ] && UBUNTU="y"
+    [ $UBUNTU == "y" ] || [ $MINT == "y" ]
+    return $?
+}
+
+
 function main() {
+    echo "Checking operating system..."
+    if ! is_valid_os; then
+        echo "Invalid operating system. This script is valid only for Ubuntu 18.04 and Linux Mint 19. Sorry"
+        exit 1
+    fi
+
     echo "Starting installation..."
 
-    if [ -z "$INCLUDE_INSTALLATION" ]; then
-        INCLUDE_INSTALLATION="y"
-    fi
+    [ -z "$INCLUDE_INSTALLATION" ] && INCLUDE_INSTALLATION="y"
 
-    if [ -z "$INCLUDE_CONFIGURATION" ]; then
-        INCLUDE_CONFIGURATION="y"
-    fi
+    [ -z "$INCLUDE_CONFIGURATION" ] && INCLUDE_CONFIGURATION="y"
 
-    if [ -z "$INCLUDE_IDE" ]; then
-        INCLUDE_IDE="n"
-    fi
+    [ -z "$INCLUDE_IDE" ] && INCLUDE_IDE="n"
 
     preparing_installation
 
