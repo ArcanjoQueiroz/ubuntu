@@ -167,8 +167,8 @@ set hlsearch
 set incsearch
 
 "Define spaces size according to the file type
-autocmd FileType html,css,ruby,javascript setlocal ts=2 sts=2 sw=2 expandtab
-autocmd FileType java,python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
+autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
 autocmd FileType make setlocal noexpandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
