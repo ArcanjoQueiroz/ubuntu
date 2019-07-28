@@ -50,7 +50,7 @@ function install_utilities() {
     sudo apt-get install -y xclip \
                             htop \
                             terminator \
-                            vim \
+                            vim-gnome \
                             snapd
 }
 
@@ -220,10 +220,6 @@ function install_android_studio() {
     sudo snap install android-studio --classic
 }
 
-function install_vim_gtk() {
-    echo "Installing Vim GTK..."
-    sudo apt-get install vim-gtk
-}
 
 function is_valid_os() {
     DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
@@ -274,8 +270,7 @@ function main() {
 
     [ $INCLUDE_IDE == "y" ] && \
         install_idea && \
-        install_android_studio && \
-        install_vim_gtk
+        install_android_studio
 
     echo "Installation was finished. Happy coding...!!!"
 }
