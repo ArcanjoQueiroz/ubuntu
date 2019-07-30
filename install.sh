@@ -50,7 +50,7 @@ function install_utilities() {
     sudo apt-get install -y xclip \
                             htop \
                             terminator \
-                            vim \
+                            vim-gnome \
                             snapd
 }
 
@@ -167,8 +167,8 @@ set hlsearch
 set incsearch
 
 "Define spaces size according to the file type
-autocmd FileType html,css,ruby,javascript setlocal ts=2 sts=2 sw=2 expandtab
-autocmd FileType java,python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
+autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
 autocmd FileType make setlocal noexpandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
@@ -220,10 +220,6 @@ function install_android_studio() {
     sudo snap install android-studio --classic
 }
 
-function install_vim_gtk() {
-    echo "Installing Vim GTK..."
-    sudo apt-get install vim-gtk
-}
 
 function is_valid_os() {
     DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
@@ -274,8 +270,7 @@ function main() {
 
     [ $INCLUDE_IDE == "y" ] && \
         install_idea && \
-        install_android_studio && \
-        install_vim_gtk
+        install_android_studio
 
     echo "Installation was finished. Happy coding...!!!"
 }
