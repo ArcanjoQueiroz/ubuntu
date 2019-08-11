@@ -1,9 +1,12 @@
 #!/bin/bash
 
 function install_google_java_format() {
-    mkdir -p ${HOME}/bin && \
-        wget https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar && \
-        mv google-java-format-1.7-all-deps.jar ${HOME}/bin/google-java-format.jar
+    GOOGLE_JAVA_FORMAT_VERSION=1.7
+    mkdir -p ${HOME}/bin
+    if [ ! -f "${HOME}/bin/google-java-format.jar" ]; then
+        wget https://github.com/google/google-java-format/releases/download/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar && \
+        mv google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar ${HOME}/bin/google-java-format.jar
+    fi
     ALIAS=$(cat ~/.bashrc | grep 'alias google-format=')
     if [ -z "${ALIAS}" ]; then
         echo '
@@ -20,9 +23,12 @@ alias google-format=googleFormat' >> ~/.bashrc
 }
 
 function install_antlr() {
-    mkdir -p ${HOME}/bin && \
-        wget https://www.antlr.org/download/antlr-4.7.2-complete.jar && \
-        mv antlr-4.7.2-complete.jar ${HOME}/bin/antlr.jar
+    ANTLR_VERSION=4.7.2
+    mkdir -p ${HOME}/bin
+    if [ ! -f "${HOME}/bin/antlr.jar" ]; then
+        wget https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar && \
+        mv antlr-${ANTLR_VERSION}-complete.jar ${HOME}/bin/antlr.jar
+    fi
     ALIAS=$(cat ~/.bashrc | grep 'alias antlr=')
     if [ -z "${ALIAS}" ]; then
         echo '
@@ -41,7 +47,8 @@ function runAntlr() {
         javac -cp ${HOME}/bin/antlr.jar *.java
     fi
 }
-alias antlr=runAntlr' >> ~/.bashrc
+alias antlr=runAntlr
+alias grun=java -cp ${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig' >> ~/.bashrc
     fi
 }
 
