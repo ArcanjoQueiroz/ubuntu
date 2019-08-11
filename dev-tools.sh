@@ -48,7 +48,7 @@ function runAntlr() {
     fi
 }
 alias antlr=runAntlr
-alias grun="java -cp ${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.bashrc
+alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.bashrc
     fi
 }
 
