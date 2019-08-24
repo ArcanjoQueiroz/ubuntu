@@ -166,6 +166,8 @@ set ignorecase
 set hlsearch
 set incsearch
 
+set clipboard=unnamedplus
+
 "Define spaces size according to the file type
 autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
@@ -230,7 +232,9 @@ function is_valid_os() {
 
     MINT="n"; UBUNTU="n"
     [ $DISTRIB_ID == "linuxmint" ] && [ $VERSION_ID == \""19\"" ] && MINT="y"
-    [ $DISTRIB_ID == "ubuntu" ] && [ $VERSION_ID == \""18.04\"" ] && UBUNTU="y"
+    [ $DISTRIB_ID == "ubuntu" ] && \
+        ( [ $VERSION_ID == \""18.04\"" ] || \
+          [ $VERSION_ID == \""19.04\"" ] ) && UBUNTU="y"
     [ $UBUNTU == "y" ] || [ $MINT == "y" ]
     return $?
 }
