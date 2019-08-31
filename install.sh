@@ -214,7 +214,8 @@ function install_docker_compose() {
 
 function install_python3() {
     echo "Installing Python 3.7..."
-    sudo apt-get install -y python3.7 \
+    sudo apt-get install -y virtualenv \
+                            python3.7 \
                             python3.7-dev \
                             python3.7-venv \
                             python3.7-dbg \
