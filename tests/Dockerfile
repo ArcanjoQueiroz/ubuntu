@@ -15,6 +15,9 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 COPY install.sh /root/install.sh
 RUN chmod u+x /root/install.sh
+
+ENV ADVANCED_TOOLS=y
+
 RUN ./install.sh
 
 CMD ["/bin/bash"]
