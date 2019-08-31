@@ -48,6 +48,7 @@ function install_libraries() {
 function install_utilities() {
     echo "Installing Utilities..."
     sudo apt-get install -y xclip \
+                            xsel \
                             htop \
                             terminator \
                             vim-gnome \
@@ -78,7 +79,8 @@ function configure_aliases() {
 }
 
 alias pbcopy="xclip -selection clipboard"
-alias pbpaste="xclip -selection clipboard -o"' > ~/.bash_aliases
+alias pbpaste="xclip -selection clipboard -o"
+alias clipboard="xsel -i --clipboard"' > ~/.bash_aliases
 }
 
 function configure_git() {
@@ -124,11 +126,13 @@ function install_sdkman() {
         echo "SKDMan is already installed"
         [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
     fi
-    sdk install java 9.0.7-zulu
+    sdk update
+    sdk install java 11.0.2-zulufx
     sdk install maven 3.6.0
-    sdk install gradle 4.10.2
-    sdk install kotlin 1.2.70
-    sdk install springboot 2.1.0.RELEASE
+    sdk install gradle 5.6.1
+    sdk install kotlin 1.3.50
+    sdk install springboot 2.1.7.RELEASE
+    sdk install visualvm 1.4.3
 }
 
 function install_nvm() {
