@@ -48,6 +48,7 @@ function install_libraries() {
 function install_utilities() {
     echo "Installing Utilities..."
     sudo apt-get install -y xclip \
+                            xsel \
                             htop \
                             terminator \
                             vim-gnome \
@@ -78,7 +79,8 @@ function configure_aliases() {
 }
 
 alias pbcopy="xclip -selection clipboard"
-alias pbpaste="xclip -selection clipboard -o"' > ~/.bash_aliases
+alias pbpaste="xclip -selection clipboard -o"
+alias clipboard="xsel -i --clipboard"' > ~/.bash_aliases
 }
 
 function configure_git() {
@@ -124,11 +126,22 @@ function install_sdkman() {
         echo "SKDMan is already installed"
         [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
     fi
-    sdk install java 9.0.7-zulu
+    sdk update
+
+    sdk install java 11.0.2-zulufx
     sdk install maven 3.6.0
-    sdk install gradle 4.10.2
-    sdk install kotlin 1.2.70
-    sdk install springboot 2.1.0.RELEASE
+    sdk install springboot 2.1.7.RELEASE
+}
+
+function install_visualvm() {
+    echo "Installing visualvm ..."
+    sdk install visualvm 1.4.3
+}
+
+function install_kotlin() {
+    echo "Installing Kotlin ..."
+    sdk install gradle 5.6.1
+    sdk install kotlin 1.3.50
 }
 
 function install_nvm() {
@@ -201,7 +214,8 @@ function install_docker_compose() {
 
 function install_python3() {
     echo "Installing Python 3.7..."
-    sudo apt-get install -y python3.7 \
+    sudo apt-get install -y virtualenv \
+                            python3.7 \
                             python3.7-dev \
                             python3.7-venv \
                             python3.7-dbg \
@@ -223,6 +237,58 @@ function install_android_studio() {
 }
 
 
+function install_google_java_format() {
+    GOOGLE_JAVA_FORMAT_VERSION=1.7
+    mkdir -p ${HOME}/bin
+    if [ ! -f "${HOME}/bin/google-java-format.jar" ]; then
+        wget https://github.com/google/google-java-format/releases/download/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar && \
+        mv google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar ${HOME}/bin/google-java-format.jar
+    fi
+    ALIAS=$(cat ~/.bashrc | grep 'alias google-format=')
+    if [ -z "${ALIAS}" ]; then
+        echo '
+function googleFormat() {
+     if [ "$#" -eq 1 ]; then
+         FILTER=$1
+     else
+         FILTER=*.java
+     fi
+     find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/google-java-format.jar --replace {} \;
+}
+alias google-format=googleFormat' >> ~/.bashrc
+    fi
+}
+
+function install_antlr() {
+    ANTLR_VERSION=4.7.2
+    mkdir -p ${HOME}/bin
+    if [ ! -f "${HOME}/bin/antlr.jar" ]; then
+        wget https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar && \
+        mv antlr-${ANTLR_VERSION}-complete.jar ${HOME}/bin/antlr.jar
+    fi
+    ALIAS=$(cat ~/.bashrc | grep 'alias antlr=')
+    if [ -z "${ALIAS}" ]; then
+        echo '
+function runAntlr() {
+    LANGUAGE=Java
+    if [ "$#" -eq 1 ]; then
+        FILTER=$1
+    elif [ "$#" -eq 2 ]; then
+        FILTER=$1
+        LANGUAGE=$2
+    else
+        FILTER=*.g4
+    fi
+    find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/antlr.jar -Dlanguage=${LANGUAGE} {} \;
+    if [ "${LANGUAGE}" == "Java" ]; then
+        javac -cp ${HOME}/bin/antlr.jar *.java
+    fi
+}
+alias antlr=runAntlr
+alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.bashrc
+    fi
+}
+
 function is_valid_os() {
     DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
     VERSION_ID=$(cat /etc/os-release | grep "^VERSION_ID=" | cut -d '=' -f 2)
@@ -239,7 +305,6 @@ function is_valid_os() {
     return $?
 }
 
-
 function main() {
     echo "Checking operating system..."
     if ! is_valid_os; then
@@ -255,6 +320,8 @@ function main() {
 
     [ -z "$INCLUDE_IDE" ] && INCLUDE_IDE="n"
 
+    [ -z "$ADVANCED_TOOLS" ] && ADVANCED_TOOLS="n"
+
     preparing_installation
 
     [ $INCLUDE_INSTALLATION == "y" ] && \
@@ -263,7 +330,6 @@ function main() {
         install_git && \
         install_sdkman && \
         install_nvm && \
-        install_python3 && \
         install_docker && \
         install_docker_compose
 
@@ -275,6 +341,13 @@ function main() {
     [ $INCLUDE_IDE == "y" ] && \
         install_idea && \
         install_android_studio
+
+    [ $ADVANCED_TOOLS == "y" ] && \
+        install_kotlin && \
+        install_visualvm && \
+        install_python3 && \
+        install_google_java_format && \
+        install_antlr
 
     echo "Installation was finished. Happy coding...!!!"
 }
