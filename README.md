@@ -39,6 +39,7 @@ This script installs the following tools/programs:
 * Docker CE
 * Docker-Compose 1.23.1
 * GCC 8
+* Eclipse Java EE
 
 The advanced tools:
 
