@@ -1,5 +1,7 @@
 ## Ubuntu Installation Script
 
+[![Build Status](https://travis-ci.org/ArcanjoQueiroz/ubuntu.svg?branch=master)](https://travis-ci.org/ArcanjoQueiroz/ubuntu)
+
 This project is a shell script to install utilities, programming languages and binaries in Debian/Ubuntu-based operating systems in one command!!!
 
 ### Installing
