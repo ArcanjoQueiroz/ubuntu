@@ -2,6 +2,6 @@ language: bash
 
 services:
   - docker
-  
+
 script:
-    - bash test/test.sh
+    - bash tests/test.sh
