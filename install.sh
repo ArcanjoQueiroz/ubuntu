@@ -66,42 +66,41 @@ function install_git() {
 
 function configure_aliases() {
     echo "Configuring Aliases..."
-        echo 'function docker-remove() {
-            CONTAINER_IDS=$(docker ps -a -q)
-                IMAGE_IDS=$(docker images -q)
-                VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1)
-                NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }")
+    echo 'function docker-remove() {
+CONTAINER_IDS=$(docker ps -a -q)
+IMAGE_IDS=$(docker images -q)
+VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1)
+NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }")
 
-                ! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS
-                ! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS
-                ! [ -z $VOLUMES ] && docker volume rm $VOLUMES
-                ! [ -z $NETWORKS ] && docker network rm $NETWORKS
-        }
+! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS
+! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS
+! [ -z $VOLUMES ] && docker volume rm $VOLUMES
+! [ -z $NETWORKS ] && docker network rm $NETWORKS
+}
 
-    alias pbcopy="xclip -selection clipboard"
-        alias pbpaste="xclip -selection clipboard -o"
-        alias clipboard="xsel -i --clipboard"' > ~/.bash_aliases
+alias pbcopy="xclip -selection clipboard"
+alias pbpaste="xclip -selection clipboard -o"
+alias clipboard="xsel -i --clipboard"' > ~/.bash_aliases
 }
 
 function configure_git() {
     echo "Configuring Git..."
-        echo ".classpath
-        .project
-        .settings
-        target
-        bin
-        .idea
-        *.log
-        *.*~
-        *.out
-        .class
-        *.pyc
-        *.pyo
-        *.swp
-        *.swo
-        node_modules
-        package.lock
-        " > ~/.gitignore && \
+    echo ".classpath
+.project
+.settings
+target
+bin
+.idea
+*.log
+*.*~
+*.out
+.class
+*.pyc
+*.pyo
+*.swp
+*.swo
+node_modules
+package.lock" > ~/.gitignore && \
         git config --global core.excludesfile ~/.gitignore && \
         git config --global diff.tool meld && \
         git config --global difftool.prompt false && \
@@ -167,28 +166,28 @@ function install_nvm() {
 
 function configure_vim() {
     echo "Configuring vim..."
-        echo 'syntax enable
+    echo 'syntax enable
 
-        set autoindent
-        set smartindent
+set autoindent
+set smartindent
 
-        set number
-        set encoding=utf-8
+set number
+set encoding=utf-8
 
-        set ignorecase
-        set hlsearch
-        set incsearch
+set ignorecase
+set hlsearch
+set incsearch
 
-        set clipboard=unnamedplus
+nnoremap <esc><esc> :noh<return>
 
-        "Define spaces size according to the file type
-        autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
-        autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
-        autocmd FileType make setlocal noexpandtab
-        autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+set clipboard=unnamedplus
 
-        "Automatically removing all trailing whitespace
-        autocmd FileType ruby,javascript,java,python,bash,sh,html,css,yaml,make autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
+autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
+autocmd FileType make setlocal noexpandtab
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+autocmd FileType ruby,javascript,java,python,bash,sh,html,css,yaml,make autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
 }
 
 function install_docker() {
@@ -246,16 +245,15 @@ function install_google_java_format() {
                 fi
                 ALIAS=$(cat ~/.bashrc | grep 'alias google-format=')
                 if [ -z "${ALIAS}" ]; then
-                    echo '
-                        function googleFormat() {
-                            if [ "$#" -eq 1 ]; then
-                                FILTER=$1
-                            else
-                                FILTER=*.java
-                                    fi
-                                    find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/google-java-format.jar --replace {} \;
-                        }
-    alias google-format=googleFormat' >> ~/.bashrc
+                    echo 'function googleFormat() {
+if [ "$#" -eq 1 ]; then
+  FILTER=$1
+else
+  FILTER=*.java
+fi
+  find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/google-java-format.jar --replace {} \;
+}
+alias google-format=googleFormat' >> ~/.bashrc
         fi
 }
 
@@ -300,24 +298,23 @@ function install_antlr() {
                 fi
                 ALIAS=$(cat ~/.bashrc | grep 'alias antlr=')
                 if [ -z "${ALIAS}" ]; then
-                    echo '
-                        function runAntlr() {
-                            LANGUAGE=Java
-                                if [ "$#" -eq 1 ]; then
-                                    FILTER=$1
-                                        elif [ "$#" -eq 2 ]; then
-                                        FILTER=$1
-                                        LANGUAGE=$2
-                                else
-                                    FILTER=*.g4
-                                        fi
-                                        find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/antlr.jar -Dlanguage=${LANGUAGE} {} \;
-                            if [ "${LANGUAGE}" == "Java" ]; then
-                                javac -cp ${HOME}/bin/antlr.jar *.java
-                                    fi
-                        }
-    alias antlr=runAntlr
-        alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.bashrc
+                    echo 'function runAntlr() {
+LANGUAGE=Java
+if [ "$#" -eq 1 ]; then
+  FILTER=$1
+elif [ "$#" -eq 2 ]; then
+  FILTER=$1
+  LANGUAGE=$2
+else
+  FILTER=*.g4
+fi
+find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/antlr.jar -Dlanguage=${LANGUAGE} {} \;
+if [ "${LANGUAGE}" == "Java" ]; then
+  javac -cp ${HOME}/bin/antlr.jar *.java
+fi
+}
+alias antlr=runAntlr
+alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.bashrc
         fi
 }
 
