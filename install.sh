@@ -329,7 +329,8 @@ function is_valid_os() {
         [ $DISTRIB_ID == "linuxmint" ] && [ $VERSION_ID == \""19\"" ] && MINT="y"
         [ $DISTRIB_ID == "ubuntu" ] && \
             ( [ $VERSION_ID == \""18.04\"" ] || \
-              [ $VERSION_ID == \""19.04\"" ] ) && UBUNTU="y"
+              [ $VERSION_ID == \""19.04\"" ] || \
+              [ $VERSION_ID == \""19.10\"" ] ) && UBUNTU="y"
                 [ $UBUNTU == "y" ] || [ $MINT == "y" ]
                     return $?
 }
