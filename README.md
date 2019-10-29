@@ -59,7 +59,7 @@ And the IDEs:
 
 ### Compatibility
 
-This script is compatible with **Ubuntu 18.04**, **Ubuntu 19.04** and **Linux Mint 19**.
+This script is compatible with **Ubuntu 18.04**, **Ubuntu 19.04**, **Ubuntu 19.10** and **Linux Mint 19**.
 
 ### Licensing
 
