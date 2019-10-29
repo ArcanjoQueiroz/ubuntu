@@ -17,6 +17,14 @@ function preparing_installation() {
     echo "Updating definitions..."
     sudo apt-get update
   fi
+
+  if is_mint; then
+    install_snapd
+  fi
+
+  if is_ubuntu; then
+    install_tweak_tool
+  fi   
 }
 
 function install_libraries() {
@@ -347,6 +355,11 @@ function install_tweak_tool() {
   sudo apt-get install -y gnome-tweak-tool
 }
 
+function install_code() {
+  echo "Installing Code..."
+  sudo snap install code --classic
+}
+
 function is_ubuntu_19_10() {
   [ $DISTRIB_ID == "ubuntu" ] && [ $VERSION_ID == \""19.10\"" ]
   return $?
@@ -373,14 +386,6 @@ function main() {
 
   preparing_installation
 
-  if is_mint; then
-    install_snapd
-  fi
-
-  if is_ubuntu; then
-    install_tweak_tool
-  fi 
-
   [ $INCLUDE_INSTALLATION == "y" ] && \
     install_libraries && \
     install_utilities && \
@@ -389,7 +394,8 @@ function main() {
     install_nvm && \
     install_docker && \
     install_docker_compose && \
-    install_eclipse
+    install_eclipse && \
+    install_code
 
     [ $INCLUDE_CONFIGURATION == "y" ] && configure_aliases
 
