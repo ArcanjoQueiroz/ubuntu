@@ -24,7 +24,7 @@ function preparing_installation() {
 
   if is_ubuntu; then
     install_tweak_tool
-  fi   
+  fi
 }
 
 function install_libraries() {
@@ -55,7 +55,7 @@ function install_libraries() {
 
 function install_utilities() {
   echo "Installing Utilities..."
-  sudo apt-get install -y xclip xsel htop terminator 
+  sudo apt-get install -y xclip xsel htop terminator
   sudo apt-get install -y vim && configure_vim
 }
 
@@ -196,13 +196,13 @@ autocmd FileType ruby,javascript,java,python,bash,sh,html,css,yaml,make autocmd 
 function install_docker() {
   if ! [ -x "$(command -v docker)" ]; then
     echo "Installing Docker..."
-    if ! is_ubuntu_19_10; then        
+    if ! is_ubuntu_19_10; then
       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
       sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
       sudo apt-get update && sudo apt-get install -y docker-ce && sudo usermod -aG docker $CURRENT_USER
     else
-      sudo snap install docker --classic          
-    fi           
+      sudo snap install docker --classic
+    fi
   else
     echo "Docker is already installed"
   fi
@@ -283,13 +283,27 @@ function install_eclipse() {
         rm ${TARGET_DIRECTORY}/eclipse-jee.tar.gz
 
       echo "Configuring eclipse.ini..."
-      ECLIPSE_INI=${TARGET_DIRECTORY}/eclipse/eclipse.ini
+      ECLIPSE_HOME=${TARGET_DIRECTORY}/eclipse
+
+      ECLIPSE_INI=${ECLIPSE_HOME}/eclipse.ini
       sed 's/-Xms.*/-Xms1024m/g' -i ${ECLIPSE_INI}
       sed 's/-Xmx.*/-Xmx4096m/g' -i ${ECLIPSE_INI}
 
       JAVA_BIN_PATH=${HOME}/.sdkman/candidates/java/current/bin
       echo "Configuring Eclipse VM ..."
       sed "s#-vmargs#-vm\n${JAVA_BIN_PATH}\n-vmargs#" -i ${ECLIPSE_INI}
+
+      echo "[Desktop Entry]
+Name=Eclipse
+Type=Application
+Exec=${ECLIPSE_HOME}/eclipse
+Terminal=false
+Icon=${ECLIPSE_HOME}/icon.xpm
+Comment=Integrated Development Environment
+NoDisplay=false
+Categories=Development;IDE;
+Name[en]=Eclipse" > ${HOME}/.local/share/applications/eclipse.desktop
+
     fi
 }
 
@@ -367,7 +381,7 @@ function is_ubuntu_19_10() {
 
 function is_ubuntu() {
   [ $DISTRIB_ID == "ubuntu" ]
-  return $?  
+  return $?
 }
 
 function main() {
