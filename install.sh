@@ -50,7 +50,8 @@ function install_libraries() {
         unzip \
         sed \
         curl \
-        wget
+        wget \
+        jq
 }
 
 function install_utilities() {
