@@ -130,7 +130,7 @@ function install_sdkman() {
     [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
   fi
   sdk update && \
-    sdk install java 11.0.2-zulufx && \
+    sdk install java 13.0.1-zulu && \
     sdk install maven 3.6.0 && \
     sdk install springboot 2.1.7.RELEASE
 }
