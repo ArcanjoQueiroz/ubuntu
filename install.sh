@@ -243,6 +243,12 @@ function install_android_studio() {
   sudo snap install android-studio --classic
 }
 
+function install_golang() {
+  echo "Installing Golang..."
+  sudo apt-get install golang-go go-dep -y && \
+  mkdir -p ${HOME}/golang/src && \
+  echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile
+}
 
 function install_google_java_format() {
   echo "Installing Google Java Formatter..."
@@ -421,7 +427,8 @@ function main() {
       install_visualvm && \
       install_python3 && \
       install_google_java_format && \
-      install_antlr
+      install_antlr && \
+      install_golang
 
   echo "Installation was finished. Happy coding...!!!"
 }
