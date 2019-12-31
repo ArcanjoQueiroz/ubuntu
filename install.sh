@@ -176,14 +176,19 @@ function install_git() {
   fi
 }
 
+function init_sdkman() {
+  SDKMAN_DIR=$HOME/.sdkman
+  [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+}
+
 function install_sdkman() {
   if ! [ -x "$SDKMAN_DIR" ]; then
     echo "Installing SDKMan..."
-    curl -s "https://get.sdkman.io" | bash && source "$HOME/.sdkman/bin/sdkman-init.sh"
+    curl -s "https://get.sdkman.io" | bash    
   else
     echo "SKDMan is already installed"
-    [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
   fi
+  init_sdkman
   sdk update
 }
 
@@ -216,7 +221,7 @@ function install_kotlin() {
 function install_nvm() {
   if ! [ -x "$NVM_DIR" ]; then
     NVM_VERSION="v0.33.11"
-    echo "Installing NVM $NVM_VERSION"
+    echo "Installing NVM $NVM_VERSION..."
     curl -o- "https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh" | bash && source ~/.bashrc
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -367,8 +372,9 @@ function install_eclipse() {
       sed "s#-vmargs#-vm\n${JAVA_BIN_PATH}\n-vmargs#" -i ${ECLIPSE_INI}
     fi
 
+    ECLIPSE_DESKTOP_FILE_DIRECTORY=${HOME}/.local/share/applications
     echo "Configuring eclipse.desktop file..."
-    mkdir -p ${HOME}/.local/share/applications && echo "[Desktop Entry]
+    mkdir -p $ECLIPSE_DESKTOP_FILE_DIRECTORY && echo "[Desktop Entry]
 Name=Eclipse
 Type=Application
 Exec=${ECLIPSE_HOME}/eclipse
@@ -377,8 +383,7 @@ Icon=${ECLIPSE_HOME}/icon.xpm
 Comment=Integrated Development Environment
 NoDisplay=false
 Categories=Development;IDE;
-Name[en]=Eclipse" > ${HOME}/.local/share/applications/eclipse.desktop
-
+Name[en]=Eclipse" > $ECLIPSE_DESKTOP_FILE_DIRECTORY/eclipse.desktop
 }
 
 function install_antlr() {
@@ -436,7 +441,6 @@ function install_meson() {
 }
 
 # Main
-
 
 function main() {
   echo "Checking operating system..."
