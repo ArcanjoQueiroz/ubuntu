@@ -237,9 +237,14 @@ function install_nvm() {
 function install_docker_using_snap() {
   echo "Installing Docker using Snap..."
   
-  sudo addgroup --system docker && \
-  sudo adduser $CURRENT_USER docker && \
-  newgrp docker
+  egrep -i "^docker" /etc/group;
+  if [ $? -eq 0 ]; then
+    echo "Group docker already exists"
+  else
+    sudo addgroup --system docker && \
+    sudo adduser $CURRENT_USER docker && \
+    newgrp docker
+  fi
 
   sudo snap install docker --classic && \
   sudo snap connect docker:home && \
@@ -336,6 +341,7 @@ alias google-format=googleFormat' >> ~/.bashrc
 
 function install_eclipse() {
     TARGET_DIRECTORY=${HOME}/bin
+    ECLIPSE_HOME=${TARGET_DIRECTORY}/eclipse    
     mkdir -p ${TARGET_DIRECTORY} && cd ${TARGET_DIRECTORY}
     if [ -e "${TARGET_DIRECTORY}/eclipse-jee.tar.gz" ]; then
       echo "Eclipse File already downloaded";
@@ -352,8 +358,6 @@ function install_eclipse() {
         rm ${TARGET_DIRECTORY}/eclipse-jee.tar.gz
 
       echo "Configuring eclipse.ini..."
-      ECLIPSE_HOME=${TARGET_DIRECTORY}/eclipse
-
       ECLIPSE_INI=${ECLIPSE_HOME}/eclipse.ini
       sed 's/-Xms.*/-Xms1024m/g' -i ${ECLIPSE_INI}
       sed 's/-Xmx.*/-Xmx4096m/g' -i ${ECLIPSE_INI}
@@ -361,8 +365,10 @@ function install_eclipse() {
       JAVA_BIN_PATH=${HOME}/.sdkman/candidates/java/current/bin
       echo "Configuring Eclipse VM ..."
       sed "s#-vmargs#-vm\n${JAVA_BIN_PATH}\n-vmargs#" -i ${ECLIPSE_INI}
+    fi
 
-      echo "[Desktop Entry]
+    echo "Configuring eclipse.desktop file..."
+    mkdir -p ${HOME}/.local/share/applications && echo "[Desktop Entry]
 Name=Eclipse
 Type=Application
 Exec=${ECLIPSE_HOME}/eclipse
@@ -373,7 +379,6 @@ NoDisplay=false
 Categories=Development;IDE;
 Name[en]=Eclipse" > ${HOME}/.local/share/applications/eclipse.desktop
 
-    fi
 }
 
 function install_antlr() {
