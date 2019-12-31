@@ -1,4 +1,4 @@
-FROM ubuntu:19.04
+FROM ubuntu:19.10
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Sao_Paulo

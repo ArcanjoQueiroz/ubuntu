@@ -1,73 +1,46 @@
 #!/bin/bash
 
-function preparing_installation() {
-  echo "Preparing installation..."
+# Operating System Detection Functions
 
-  if [ -z "$USER" ]; then
-    CURRENT_USER=$(id -un)
-  else
-    CURRENT_USER="$USER"
-  fi
-  export CURRENT_USER
-  echo "Current user is $CURRENT_USER"
+function is_valid_os() {
+  export DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
+  export VERSION_ID=$(cat /etc/os-release | grep "^VERSION_ID=" | cut -d '=' -f 2)
 
-  if ! [ -x "$(command -v sudo)" ]; then
-    apt-get update && apt-get install sudo
-  else
-    echo "Updating definitions..."
-    sudo apt-get update
-  fi
+  echo "Target Distribution: $DISTRIB_ID"
+  echo "Target Version: $VERSION_ID"
 
-  if is_mint; then
-    install_snapd
-  fi
+  MINT="n"; UBUNTU="n"
 
-  if is_ubuntu; then
-    install_tweak_tool
-  fi
+  is_mint && MINT="y"
+  is_ubuntu && UBUNTU="y"
+
+  [ $UBUNTU == "y" ] || [ $MINT == "y" ]
+  return $?
 }
 
-function install_libraries() {
-    echo "Installing Libraries..."
-        sudo apt-get install -y build-essential \
-        checkinstall \
-        gcc-7 \
-        libreadline-gplv2-dev \
-        libncursesw5-dev \
-        libssl-dev \
-        libsqlite3-dev \
-        tk-dev \
-        libgdbm-dev \
-        libc6-dev \
-        libbz2-dev \
-        apt-transport-https \
-        ca-certificates \
-        software-properties-common \
-        openvpn \
-        openssh-client \
-        openssh-server \
-        zip \
-        unzip \
-        sed \
-        curl \
-        wget \
-        jq
+function is_mint() {
+  [ $DISTRIB_ID == "linuxmint" ] &&
+    ( [ $VERSION_ID == \""19\"" ] ||
+      [ $VERSION_ID == \""19.1\"" ] ||
+      [ $VERSION_ID == \""19.2\"" ] ||
+      [ $VERSION_ID == \""19.3\"" ] )
+  return $?
 }
 
-function install_utilities() {
-  echo "Installing Utilities..."
-  sudo apt-get install -y xclip xsel htop terminator
-  sudo apt-get install -y vim && configure_vim
+function is_ubuntu_19_10() {
+  [ $DISTRIB_ID == "ubuntu" ] && [ $VERSION_ID == \""19.10\"" ]
+  return $?
 }
 
-function install_git() {
-  if ! [ -x "$(command -v git)" ]; then
-    echo "Installing Git and Meld..."
-    sudo apt-get install -y git meld && configure_git
-  else
-    echo "Git is already installed"
-  fi
+function is_ubuntu() {
+  [ $DISTRIB_ID == "ubuntu" ] && \
+      ( [ $VERSION_ID == \""18.04\"" ] || \
+        [ $VERSION_ID == \""19.04\"" ] || \
+        [ $VERSION_ID == \""19.10\"" ] )
+  return $?
 }
+
+# Configuration functions
 
 function configure_aliases() {
   echo "Configuring Aliases..."
@@ -122,6 +95,87 @@ package.lock" > ~/.gitignore && \
         git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 }
 
+function configure_vim() {
+  echo "Configuring vim..."
+  echo 'syntax enable
+
+set autoindent
+set smartindent
+
+set number
+set encoding=utf-8
+
+set ignorecase
+set hlsearch
+set incsearch
+
+nnoremap <esc><esc> :noh<return>
+
+set clipboard=unnamedplus
+
+autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
+autocmd FileType make setlocal noexpandtab
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+autocmd FileType ruby,javascript,java,python,bash,sh,html,css,yaml,make autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
+}
+
+# Installation functions
+
+function install_libraries() {
+    echo "Installing Libraries..."
+        sudo apt-get install -y build-essential \
+        checkinstall \
+        libreadline-gplv2-dev \
+        libncursesw5-dev \
+        libssl-dev \
+        libsqlite3-dev \
+        tk-dev \
+        libgdbm-dev \
+        libc6-dev \
+        libbz2-dev \
+        apt-transport-https \
+        ca-certificates \
+        software-properties-common \
+        openvpn \
+        openssh-client \
+        openssh-server \
+        zip \
+        unzip \
+        sed \
+        curl \
+        wget \
+        jq \
+        xclip \
+        xsel \
+        htop
+}
+
+function install_gcc8() {
+  echo "Installing GCC..."
+  sudo apt-get install -y gcc-8
+}
+
+function install_terminator() {
+  echo "Installing Terminator..."
+  sudo apt-get install -y terminator
+}
+
+function install_vim() {
+  echo "Installing Vim..."
+  sudo apt-get install -y vim && configure_vim
+}
+
+function install_git() {
+  if ! [ -x "$(command -v git)" ]; then
+    echo "Installing Git and Meld..."
+    sudo apt-get install -y git meld && configure_git
+  else
+    echo "Git is already installed"
+  fi
+}
+
 function install_sdkman() {
   if ! [ -x "$SDKMAN_DIR" ]; then
     echo "Installing SDKMan..."
@@ -130,10 +184,22 @@ function install_sdkman() {
     echo "SKDMan is already installed"
     [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
   fi
-  sdk update && \
-    sdk install java 13.0.1-zulu && \
-    sdk install maven 3.6.0 && \
-    sdk install springboot 2.1.7.RELEASE
+  sdk update
+}
+
+function install_java13() {
+  echo "Installing Java 13..."
+  sdk install java 13.0.1-zulu
+}
+
+function install_maven3() {
+  echo "Installing Maven 3.6.0..."  
+  sdk install maven 3.6.0
+}
+
+function install_spring() {
+  echo "Installing Spring Boot CLI 2.1.7.RELEASE..."    
+  sdk install springboot 2.1.7.RELEASE
 }
 
 function install_visualvm() {
@@ -168,45 +234,40 @@ function install_nvm() {
   fi
 }
 
-function configure_vim() {
-  echo "Configuring vim..."
-  echo 'syntax enable
+function install_docker_using_snap() {
+  echo "Installing Docker using Snap..."
+  
+  sudo addgroup --system docker && \
+  sudo adduser $CURRENT_USER docker && \
+  newgrp docker
 
-set autoindent
-set smartindent
+  sudo snap install docker --classic && \
+  sudo snap connect docker:home && \
+  sudo snap disable docker && \
+  sudo snap enable docker
+}
 
-set number
-set encoding=utf-8
-
-set ignorecase
-set hlsearch
-set incsearch
-
-nnoremap <esc><esc> :noh<return>
-
-set clipboard=unnamedplus
-
-autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
-autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
-autocmd FileType make setlocal noexpandtab
-autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-
-autocmd FileType ruby,javascript,java,python,bash,sh,html,css,yaml,make autocmd BufWritePre * %s/\s\+$//e' > ~/.vimrc
+function install_docker_using_apt() {
+  if ! [ -x "$(command -v docker)" ]; then  
+    echo "Installing Docker using Package Manager..."
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
+    sudo apt-get update && sudo apt-get install -y docker-ce && sudo usermod -aG docker $CURRENT_USER
+  else
+    echo "Docker is already installed"
+  fi    
 }
 
 function install_docker() {
-  if ! [ -x "$(command -v docker)" ]; then
-    echo "Installing Docker..."
-    if ! is_ubuntu_19_10; then
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
-      sudo apt-get update && sudo apt-get install -y docker-ce && sudo usermod -aG docker $CURRENT_USER
-    else
-      sudo snap install docker --classic
-    fi
+  echo "Installing Docker..."
+  if is_mint; then
+    install_docker_using_snap      
+  fi        
+  if is_ubuntu_19_10; then
+    install_docker_using_snap
   else
-    echo "Docker is already installed"
-  fi
+    install_docker_using_apt
+  fi  
 }
 
 function install_docker_compose() {
@@ -228,7 +289,8 @@ function install_python3() {
   python3.7-dbg \
   python3-pip \
   python3-virtualenv \
-  python3-setuptools && \
+  python3-setuptools \
+  python3-wheel && \
   python3.7 -m pip install -U pip setuptools wheel --user && \
   python3.7 -m pip install -U "pylint<2.0.0" --user
 }
@@ -344,36 +406,18 @@ alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.ba
   fi
 }
 
-function is_valid_os() {
-  export DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
-  export VERSION_ID=$(cat /etc/os-release | grep "^VERSION_ID=" | cut -d '=' -f 2)
-
-  echo "Target Distribution: $DISTRIB_ID"
-  echo "Target Version: $VERSION_ID"
-
-  MINT="n"; UBUNTU="n"
-  [ $DISTRIB_ID == "linuxmint" ] && [ $VERSION_ID == \""19\"" ] && MINT="y"
-  [ $DISTRIB_ID == "ubuntu" ] && \
-      ( [ $VERSION_ID == \""18.04\"" ] || \
-        [ $VERSION_ID == \""19.04\"" ] || \
-        [ $VERSION_ID == \""19.10\"" ] ) && UBUNTU="y"
-          [ $UBUNTU == "y" ] || [ $MINT == "y" ]
-  return $?
-}
-
-function is_mint() {
-  [ $DISTRIB_ID == "linuxmint" ] && [ $VERSION_ID == \""19\"" ]
-  return $?
-}
-
 function install_snapd() {
-  echo "Installing Snap"
-  sudo apt-get install -y snapd
+  if is_mint; then
+    echo "Installing Snap..."
+    sudo apt-get install -y snapd
+  fi
 }
 
 function install_tweak_tool() {
-  echo "Installing Gnome Tweak Tool..."
-  sudo apt-get install -y gnome-tweak-tool
+  if is_ubuntu; then
+    echo "Installing Gnome Tweak Tool..."
+    sudo apt-get install -y gnome-tweak-tool
+  fi
 }
 
 function install_code() {
@@ -381,54 +425,102 @@ function install_code() {
   sudo snap install code --classic
 }
 
-function is_ubuntu_19_10() {
-  [ $DISTRIB_ID == "ubuntu" ] && [ $VERSION_ID == \""19.10\"" ]
-  return $?
+function install_meson() {
+  echo "Installing Meson..."
+  sudo apt-get install -y ninja-build meson
 }
 
-function is_ubuntu() {
-  [ $DISTRIB_ID == "ubuntu" ]
-  return $?
-}
+# Main
+
 
 function main() {
   echo "Checking operating system..."
   if ! is_valid_os; then
-    echo "Invalid operating system. This script is valid only for Ubuntu 18.04 and Linux Mint 19. Sorry"
+    echo "Invalid operating system. This script is valid for: "
+    echo "- Ubuntu 18.04"
+    echo "- Ubuntu 19.04"
+    echo "- Ubuntu 19.10"
+    echo "- Linux Mint 19"
+    echo "- Linux Mint 19.1"
+    echo "- Linux Mint 19.2"
+    echo "- Linux Mint 19.3"
+    echo "Sorry"
     exit 1
   fi
 
-  echo "Starting installation..."
+  [ -z "$INSTALL_LIBRARIES" ] && INSTALL_LIBRARIES="y"
+  [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="y"  
+  [ -z "$INSTALL_SNAPD" ] && INSTALL_SNAPD="y"
+  [ -z "$INSTALL_GNOME_TWEAK_TOOL" ] && INSTALL_GNOME_TWEAK_TOOL="y"
+  [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="y"
+  [ -z "$INSTALL_GIT" ] && INSTALL_GIT="y"
+  [ -z "$INSTALL_VIM" ] && INSTALL_VIM="y"
+  [ -z "$INSTALL_TERMINATOR" ] && INSTALL_TERMINATOR="y"
+  [ -z "$INSTALL_SDKMAN" ] && INSTALL_SDKMAN="y"
+  [ -z "$INSTALL_JAVA" ] && INSTALL_JAVA="y"
+  [ -z "$INSTALL_MAVEN" ] && INSTALL_MAVEN="y"
+  [ -z "$INSTALL_SPRING" ] && INSTALL_SPRING="y"      
+  [ -z "$INSTALL_NVM" ] && INSTALL_NVM="y"
+  [ -z "$INSTALL_DOCKER" ] && INSTALL_DOCKER="y"
+  [ -z "$INSTALL_MESON" ] && INSTALL_MESON="y"
+  [ -z "$CONFIGURE_ALIASES" ] && CONFIGURE_ALIASES="y"
+  [ -z "$INSTALL_IDEA" ] && INSTALL_IDEA="y"
+  [ -z "$INSTALL_ANDROID_STUDIO" ] && INSTALL_ANDROID_STUDIO="y"
+  [ -z "$INSTALL_CODE" ] && INSTALL_CODE="y"
+  [ -z "$INSTALL_ECLIPSE" ] && INSTALL_ECLIPSE="y"
+  [ -z "$INSTALL_KOTLIN" ] && INSTALL_KOTLIN="y"
+  [ -z "$INSTALL_VISUALVM" ] && INSTALL_VISUALVM="y"
+  [ -z "$INSTALL_GOOGLE_JAVA_FORMAT" ] && INSTALL_GOOGLE_JAVA_FORMAT="y"
+  [ -z "$INSTALL_ANTLR" ] && INSTALL_ANTLR="y"
+  [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="y"
 
-  [ -z "$INCLUDE_INSTALLATION" ] && INCLUDE_INSTALLATION="y"
-  [ -z "$INCLUDE_CONFIGURATION" ] && INCLUDE_CONFIGURATION="y"
-  [ -z "$INCLUDE_IDE" ] && INCLUDE_IDE="n"
-  [ -z "$ADVANCED_TOOLS" ] && ADVANCED_TOOLS="n"
+  echo "Preparing installation..."
 
-  preparing_installation
+  if [ -z "$USER" ]; then
+    CURRENT_USER=$(id -un)
+  else
+    CURRENT_USER="$USER"
+  fi
 
-  [ $INCLUDE_INSTALLATION == "y" ] && \
-    install_libraries && \
-    install_utilities && \
-    install_git && \
-    install_sdkman && \
-    install_nvm && \
-    install_docker && \
-    install_docker_compose && \
-    install_eclipse && \
-    install_code
+  export CURRENT_USER
+  echo "Current user is $CURRENT_USER"
 
-    [ $INCLUDE_CONFIGURATION == "y" ] && configure_aliases
+  if ! [ -x "$(command -v sudo)" ]; then
+    apt-get update && apt-get install sudo
+  else
+    echo "Updating definitions..."
+    sudo apt-get update
+  fi
 
-    [ $INCLUDE_IDE == "y" ] && install_idea && install_android_studio
+  [ $INSTALL_LIBRARIES == "y" ] && install_libraries
+  [ $INSTALL_SNAPD == "y" ] && install_snapd
+  [ $INSTALL_GNOME_TWEAK_TOOL == "y" ] && install_tweak_tool
 
-    [ $ADVANCED_TOOLS == "y" ] && \
-      install_kotlin && \
-      install_visualvm && \
-      install_python3 && \
-      install_google_java_format && \
-      install_antlr && \
-      install_golang
+  [ $INSTALL_GIT == "y" ] && install_git
+  [ $INSTALL_VIM == "y" ] && install_vim
+  [ $INSTALL_TERMINATOR == "y" ] && install_terminator
+  [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose  
+  [ $INSTALL_MESON == "y" ] && install_meson
+
+  [ $INSTALL_GCC8 == "y" ] && install_gcc8  
+  [ $INSTALL_PYTHON3 == "y" ] && install_python3  
+  [ $INSTALL_SDKMAN == "y" ] && install_sdkman
+  [ $INSTALL_JAVA == "y" ] && install_java13
+  [ $INSTALL_MAVEN == "y" ] && install_maven3
+  [ $INSTALL_SPRING == "y" ] && install_spring
+  [ $INSTALL_NVM == "y" ] && install_nvm
+  [ $INSTALL_KOTLIN == "y" ] && install_kotlin    
+  [ $INSTALL_GOLANG == "y" ] && install_golang
+
+  [ $INSTALL_IDEA == "y" ] && install_idea
+  [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
+  [ $INSTALL_CODE == "y" ] && install_code
+  [ $INSTALL_ECLIPSE == "y" ] && install_eclipse
+  [ $INSTALL_VISUALVM == "y" ] && install_visualvm
+  [ $INSTALL_GOOGLE_JAVA_FORMAT == "y" ] && install_google_java_format
+  [ $INSTALL_ANTLR == "y" ] && install_antlr
+
+  [ $CONFIGURE_ALIASES == "y" ] && configure_aliases
 
   echo "Installation was finished. Happy coding...!!!"
 }

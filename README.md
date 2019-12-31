@@ -12,54 +12,41 @@ The following example shows how to use the installation script:
 curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
 ```
 
-If you want to install Intellij IDEA Community Editon and Android Studio, set the INCLUDE_IDE = 'y' in your command:
-
-```sh
-curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | INCLUDE_IDE=y bash
-```
-
-In order to install the advanced tools, include ADVANCED_TOOLS environment variable as in the following example:
-
-
-```sh
-curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | ADVANCED_TOOLS=y bash
-```
-
 ### What does install.sh install?
 
 This script installs the following tools/programs:
 
 * Snap
 * Terminator
-* Vim
 * Git
 * Meld
-* Java 11.0.2-zulufx
+* Docker CE
+* Docker-Compose 1.23.1
+
+* Java 13
 * Maven 3.6.0
 * Spring Boot CLI 2.1.7.RELEASE
 * Node.js v11.2.0
-* Docker CE
-* Docker-Compose 1.23.1
 * GCC 8
-* Eclipse Java EE
-
-The advanced tools:
-
 * Kotlin 1.3.50
 * Gradle 5.6.1
-* Visualvm 1.4.3
 * Python 3.7
+
+* Visualvm 1.4.3
 * Google Java Formatter
 * Antlr
 
-And the IDEs:
+And the IDEs/Editors:
 
 * IntelliJ IDEA Community Edition
 * Android Studio
+* Eclipse Java EE
+* Code
+* Vim
 
 ### Compatibility
 
-This script is compatible with **Ubuntu 18.04**, **Ubuntu 19.04**, **Ubuntu 19.10** and **Linux Mint 19**.
+This script is compatible with **Ubuntu 18.04**, **Ubuntu 19.04**, **Ubuntu 19.10**, **Linux Mint 19**, **Linux Mint 19.1**, **Linux Mint 19.2** and **Linux Mint 19.3**.
 
 ### Licensing
 
