@@ -314,7 +314,7 @@ function install_docker() {
 
 function install_docker_compose() {
   if ! [ -x "$(command -v docker-compose)" ]; then
-    DOCKER_COMPOSE_VERSION="1.23.1"
+    DOCKER_COMPOSE_VERSION="1.25.0"
     echo "Installing Docker-Compose $DOCKER_COMPOSE_VERSION..."
     sudo curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
   else
