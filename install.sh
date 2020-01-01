@@ -153,7 +153,7 @@ function install_libraries() {
 }
 
 function install_gcc8() {
-  echo "Installing GCC..."
+  echo "Installing GCC-8..."
   sudo apt-get install -y gcc-8
 }
 
@@ -169,10 +169,19 @@ function install_vim() {
 
 function install_git() {
   if ! [ -x "$(command -v git)" ]; then
-    echo "Installing Git and Meld..."
-    sudo apt-get install -y git meld && configure_git
+    echo "Installing Git..."
+    sudo apt-get install -y git && configure_git
   else
     echo "Git is already installed"
+  fi
+}
+
+function install_meld() {
+  if ! [ -x "$(command -v meld)" ]; then
+    echo "Installing Meld..."
+    sudo apt-get install -y meld
+  else
+    echo "Meld is already installed"
   fi
 }
 
@@ -184,7 +193,7 @@ function init_sdkman() {
 function install_sdkman() {
   if ! [ -x "$SDKMAN_DIR" ]; then
     echo "Installing SDKMan..."
-    curl -s "https://get.sdkman.io" | bash    
+    curl -s "https://get.sdkman.io" | bash
   else
     echo "SKDMan is already installed"
   fi
@@ -193,29 +202,51 @@ function install_sdkman() {
 }
 
 function install_java13() {
-  echo "Installing Java 13..."
-  sdk install java 13.0.1-zulu
+  JAVA_VERSION=13.0.1-zulu
+  echo "Installing Java $JAVA_VERSION..."
+  sdk install java $JAVA_VERSION
 }
 
 function install_maven3() {
-  echo "Installing Maven 3.6.0..."  
-  sdk install maven 3.6.0
+  MAVEN_VERSION=3.6.3
+  echo "Installing Maven $MAVEN_VERSION..."
+  sdk install maven $MAVEN_VERSION
 }
 
 function install_spring() {
-  echo "Installing Spring Boot CLI 2.1.7.RELEASE..."    
-  sdk install springboot 2.1.7.RELEASE
+  SPRING_BOOT_VERSION=2.2.2.RELEASE
+  echo "Installing Spring Boot CLI $SPRING_BOOT_VERSION..."
+  sdk install springboot $SPRING_BOOT_VERSION
 }
 
 function install_visualvm() {
-  echo "Installing visualvm ..."
-  sdk install visualvm 1.4.3
+  VISUALVM_VERSION=1.4.4
+  echo "Installing visualvm $VISUALVM_VERSION..."
+  sdk install visualvm $VISUALVM_VERSION
+}
+
+function install_gradle() {
+  GRADLE_VERSION=5.6.1
+  echo "Installing Gradle $GRADLE_VERSION..."
+  sdk install gradle $GRADLE_VERSION
 }
 
 function install_kotlin() {
-  echo "Installing Kotlin ..."
-  sdk install gradle 5.6.1
-  sdk install kotlin 1.3.50
+  KOTLIN_VERSION=1.3.61
+  echo "Installing Kotlin $KOTLIN_VERSION..."
+  sdk install kotlin $KOTLIN_VERSION
+}
+
+function install_leiningen() {
+  LEININGEN_VERSION=2.9.0
+  echo "Installing Leiningen $LEININGEN_VERSION..."
+  sdk install leiningen $LEININGEN_VERSION
+}
+
+function init_nvm() {
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 }
 
 function install_nvm() {
@@ -223,25 +254,26 @@ function install_nvm() {
     NVM_VERSION="v0.33.11"
     echo "Installing NVM $NVM_VERSION..."
     curl -o- "https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh" | bash && source ~/.bashrc
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    init_nvm
   else
     echo "NVM is already installed"
   fi
+}
 
-  if ! [ -x "$(command -v node)" ]; then
-    NODE_VERSION="v11.2.0"
-    echo "Installing node $NODE_VERSION through nvm"
-    nvm install node $NODE_VERSION
+function install_npm() {
+  NODE_VERSION=v13.5.0
+  if [ -x "$(command -v node)" ] && [ "$(node -v)" == $NODE_VERSION ]; then
+    echo "Node $NODE_VERSION is already installed"
   else
-    echo "Node is already installed"
+    echo "Installing node $NODE_VERSION..."
+    init_nvm
+    nvm install node $NODE_VERSION
   fi
 }
 
 function install_docker_using_snap() {
   echo "Installing Docker using Snap..."
-  
+
   egrep -i "^docker" /etc/group;
   if [ $? -eq 0 ]; then
     echo "Group docker already exists"
@@ -258,26 +290,26 @@ function install_docker_using_snap() {
 }
 
 function install_docker_using_apt() {
-  if ! [ -x "$(command -v docker)" ]; then  
+  if ! [ -x "$(command -v docker)" ]; then
     echo "Installing Docker using Package Manager..."
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
     sudo apt-get update && sudo apt-get install -y docker-ce && sudo usermod -aG docker $CURRENT_USER
   else
     echo "Docker is already installed"
-  fi    
+  fi
 }
 
 function install_docker() {
   echo "Installing Docker..."
   if is_mint; then
-    install_docker_using_snap      
-  fi        
+    install_docker_using_snap
+  fi
   if is_ubuntu_19_10; then
     install_docker_using_snap
   else
     install_docker_using_apt
-  fi  
+  fi
 }
 
 function install_docker_compose() {
@@ -323,8 +355,8 @@ function install_golang() {
 }
 
 function install_google_java_format() {
-  echo "Installing Google Java Formatter..."
   GOOGLE_JAVA_FORMAT_VERSION=1.7
+  echo "Installing Google Java Formatter $GOOGLE_JAVA_FORMAT_VERSION..."
   mkdir -p ${HOME}/bin
   if [ ! -f "${HOME}/bin/google-java-format.jar" ]; then
     wget https://github.com/google/google-java-format/releases/download/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar && \
@@ -346,7 +378,7 @@ alias google-format=googleFormat' >> ~/.bashrc
 
 function install_eclipse() {
     TARGET_DIRECTORY=${HOME}/bin
-    ECLIPSE_HOME=${TARGET_DIRECTORY}/eclipse    
+    ECLIPSE_HOME=${TARGET_DIRECTORY}/eclipse
     mkdir -p ${TARGET_DIRECTORY} && cd ${TARGET_DIRECTORY}
     if [ -e "${TARGET_DIRECTORY}/eclipse-jee.tar.gz" ]; then
       echo "Eclipse File already downloaded";
@@ -387,8 +419,8 @@ Name[en]=Eclipse" > $ECLIPSE_DESKTOP_FILE_DIRECTORY/eclipse.desktop
 }
 
 function install_antlr() {
-  echo "Installing Antlr..."
   ANTLR_VERSION=4.7.2
+  echo "Installing Antlr $ANTLR_VERSION..."
   mkdir -p ${HOME}/bin
   if [ ! -f "${HOME}/bin/antlr.jar" ]; then
     wget https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar && \
@@ -458,18 +490,20 @@ function main() {
   fi
 
   [ -z "$INSTALL_LIBRARIES" ] && INSTALL_LIBRARIES="y"
-  [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="y"  
+  [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="y"
   [ -z "$INSTALL_SNAPD" ] && INSTALL_SNAPD="y"
   [ -z "$INSTALL_GNOME_TWEAK_TOOL" ] && INSTALL_GNOME_TWEAK_TOOL="y"
   [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="y"
   [ -z "$INSTALL_GIT" ] && INSTALL_GIT="y"
+  [ -z "$INSTALL_MELD" ] && INSTALL_MELD="y"
   [ -z "$INSTALL_VIM" ] && INSTALL_VIM="y"
   [ -z "$INSTALL_TERMINATOR" ] && INSTALL_TERMINATOR="y"
   [ -z "$INSTALL_SDKMAN" ] && INSTALL_SDKMAN="y"
   [ -z "$INSTALL_JAVA" ] && INSTALL_JAVA="y"
   [ -z "$INSTALL_MAVEN" ] && INSTALL_MAVEN="y"
-  [ -z "$INSTALL_SPRING" ] && INSTALL_SPRING="y"      
+  [ -z "$INSTALL_SPRING" ] && INSTALL_SPRING="y"
   [ -z "$INSTALL_NVM" ] && INSTALL_NVM="y"
+  [ -z "$INSTALL_NPM" ] && INSTALL_NPM="y"
   [ -z "$INSTALL_DOCKER" ] && INSTALL_DOCKER="y"
   [ -z "$INSTALL_MESON" ] && INSTALL_MESON="y"
   [ -z "$CONFIGURE_ALIASES" ] && CONFIGURE_ALIASES="y"
@@ -477,11 +511,13 @@ function main() {
   [ -z "$INSTALL_ANDROID_STUDIO" ] && INSTALL_ANDROID_STUDIO="y"
   [ -z "$INSTALL_CODE" ] && INSTALL_CODE="y"
   [ -z "$INSTALL_ECLIPSE" ] && INSTALL_ECLIPSE="y"
+  [ -z "$INSTALL_GRADLE" ] && INSTALL_GRADLE="y"
   [ -z "$INSTALL_KOTLIN" ] && INSTALL_KOTLIN="y"
   [ -z "$INSTALL_VISUALVM" ] && INSTALL_VISUALVM="y"
   [ -z "$INSTALL_GOOGLE_JAVA_FORMAT" ] && INSTALL_GOOGLE_JAVA_FORMAT="y"
   [ -z "$INSTALL_ANTLR" ] && INSTALL_ANTLR="y"
   [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="y"
+  [ -z "$INSTALL_LEININGEN" ] && INSTALL_LEININGEN="n"
 
   echo "Preparing installation..."
 
@@ -506,26 +542,33 @@ function main() {
   [ $INSTALL_GNOME_TWEAK_TOOL == "y" ] && install_tweak_tool
 
   [ $INSTALL_GIT == "y" ] && install_git
+  [ $INSTALL_MELD == "y" ] && install_meld
   [ $INSTALL_VIM == "y" ] && install_vim
   [ $INSTALL_TERMINATOR == "y" ] && install_terminator
-  [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose  
+  [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
   [ $INSTALL_MESON == "y" ] && install_meson
 
-  [ $INSTALL_GCC8 == "y" ] && install_gcc8  
-  [ $INSTALL_PYTHON3 == "y" ] && install_python3  
+  [ $INSTALL_GCC8 == "y" ] && install_gcc8
+  [ $INSTALL_PYTHON3 == "y" ] && install_python3
+  [ $INSTALL_GOLANG == "y" ] && install_golang
+
+  [ $INSTALL_NVM == "y" ] && install_nvm
+  [ $INSTALL_NPM == "y" ] && install_npm
+
   [ $INSTALL_SDKMAN == "y" ] && install_sdkman
   [ $INSTALL_JAVA == "y" ] && install_java13
   [ $INSTALL_MAVEN == "y" ] && install_maven3
   [ $INSTALL_SPRING == "y" ] && install_spring
-  [ $INSTALL_NVM == "y" ] && install_nvm
-  [ $INSTALL_KOTLIN == "y" ] && install_kotlin    
-  [ $INSTALL_GOLANG == "y" ] && install_golang
+  [ $INSTALL_GRADLE == "y" ] && install_gradle
+  [ $INSTALL_KOTLIN == "y" ] && install_kotlin
+  [ $INSTALL_VISUALVM == "y" ] && install_visualvm
+  [ $INSTALL_LEININGEN == "y" ] && install_leiningen
 
   [ $INSTALL_IDEA == "y" ] && install_idea
   [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
   [ $INSTALL_CODE == "y" ] && install_code
   [ $INSTALL_ECLIPSE == "y" ] && install_eclipse
-  [ $INSTALL_VISUALVM == "y" ] && install_visualvm
+
   [ $INSTALL_GOOGLE_JAVA_FORMAT == "y" ] && install_google_java_format
   [ $INSTALL_ANTLR == "y" ] && install_antlr
 
