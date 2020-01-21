@@ -202,7 +202,7 @@ function install_sdkman() {
 }
 
 function install_java13() {
-  JAVA_VERSION=13.0.1-zulu
+  JAVA_VERSION=13.0.2-zulu
   echo "Installing Java $JAVA_VERSION..."
   sdk install java $JAVA_VERSION
 }
