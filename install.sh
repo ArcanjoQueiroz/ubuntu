@@ -202,7 +202,7 @@ function install_sdkman() {
 }
 
 function install_java13() {
-  JAVA_VERSION=13.0.1-zulu
+  JAVA_VERSION=13.0.2-zulu
   echo "Installing Java $JAVA_VERSION..."
   sdk install java $JAVA_VERSION
 }
@@ -384,7 +384,7 @@ function install_eclipse() {
       echo "Eclipse File already downloaded";
     else
       echo "Downloading Eclipse Java EE ...";
-      wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2019-06/R/eclipse-jee-2019-06-R-linux-gtk-x86_64.tar.gz&r=1'
+      wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2019-12/R/eclipse-jee-2019-12-R-linux-gtk-x86_64.tar.gz&r=1'
     fi
 
     if [ -d "${TARGET_DIRECTORY}/eclipse" ]; then
