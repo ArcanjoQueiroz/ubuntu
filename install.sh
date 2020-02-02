@@ -284,8 +284,8 @@ function install_docker_using_snap() {
   fi
 
   sudo snap install docker --classic && \
-  sudo snap connect docker:home && \
-  sudo snap disable docker && \
+  sudo snap connect docker:home
+  sudo snap disable docker
   sudo snap enable docker
 }
 
