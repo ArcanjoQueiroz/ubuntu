@@ -72,7 +72,15 @@ And by environment variables:
 
 ### Compatibility
 
-This script is compatible with **Ubuntu 18.04**, **Ubuntu 19.04**, **Ubuntu 19.10**, **Linux Mint 19**, **Linux Mint 19.1**, **Linux Mint 19.2** and **Linux Mint 19.3**.
+This script is compatible with:
+
+* Ubuntu 18.04
+* Ubuntu 19.04
+* Ubuntu 19.10
+* Linux Mint 19
+* Linux Mint 19.1
+* Linux Mint 19.2
+* Linux Mint 19.3
 
 ### Licensing
 
