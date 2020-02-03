@@ -283,7 +283,7 @@ function install_docker_using_snap() {
     newgrp docker
   fi
 
-  sudo snap install docker --classic && \
+  sudo snap install docker && \
   sudo snap connect docker:home
   sudo snap disable docker
   sudo snap enable docker
