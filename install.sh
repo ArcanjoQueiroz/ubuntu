@@ -538,14 +538,12 @@ function main() {
   fi
 
   [ $INSTALL_LIBRARIES == "y" ] && install_libraries
-  [ $INSTALL_SNAPD == "y" ] && install_snapd
   [ $INSTALL_GNOME_TWEAK_TOOL == "y" ] && install_tweak_tool
 
   [ $INSTALL_GIT == "y" ] && install_git
   [ $INSTALL_MELD == "y" ] && install_meld
   [ $INSTALL_VIM == "y" ] && install_vim
   [ $INSTALL_TERMINATOR == "y" ] && install_terminator
-  [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
   [ $INSTALL_MESON == "y" ] && install_meson
 
   [ $INSTALL_GCC8 == "y" ] && install_gcc8
@@ -573,6 +571,14 @@ function main() {
   [ $INSTALL_ANTLR == "y" ] && install_antlr
 
   [ $CONFIGURE_ALIASES == "y" ] && configure_aliases
+
+  [ $INSTALL_SNAPD == "y" ] && install_snapd
+
+  [ $INSTALL_IDEA == "y" ] && install_idea
+  [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
+  [ $INSTALL_CODE == "y" ] && install_code
+
+  [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
 
   echo "Installation was finished. Happy coding...!!!"
 }
