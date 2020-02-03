@@ -113,7 +113,7 @@ nnoremap <esc><esc> :noh<return>
 
 set clipboard=unnamedplus
 
-autocmd FileType html,css,ruby,javascript,java setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType html,css,ruby,javascript,java,dart,kotlin setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType python,bash,sh setlocal ts=4 sts=4 sw=4 expandtab
 autocmd FileType make setlocal noexpandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
@@ -304,11 +304,12 @@ function install_docker() {
   echo "Installing Docker..."
   if is_mint; then
     install_docker_using_snap
-  fi
-  if is_ubuntu_19_10; then
-    install_docker_using_snap
   else
-    install_docker_using_apt
+    if is_ubuntu_19_10; then
+      install_docker_using_snap
+    else
+      install_docker_using_apt
+    fi
   fi
 }
 
@@ -379,29 +380,36 @@ alias google-format=googleFormat' >> ~/.bashrc
 function install_eclipse() {
     TARGET_DIRECTORY=${HOME}/bin
     ECLIPSE_HOME=${TARGET_DIRECTORY}/eclipse
-    mkdir -p ${TARGET_DIRECTORY} && cd ${TARGET_DIRECTORY}
-    if [ -e "${TARGET_DIRECTORY}/eclipse-jee.tar.gz" ]; then
-      echo "Eclipse File already downloaded";
+
+    if [ ! -d "$ECLIPSE_HOME" ]; then
+      echo "Installing Eclipse IDE..."
+
+      mkdir -p ${TARGET_DIRECTORY} && cd ${TARGET_DIRECTORY}
+      if [ -e "${TARGET_DIRECTORY}/eclipse-jee.tar.gz" ]; then
+        echo "Eclipse File already downloaded";
+      else
+        echo "Downloading Eclipse Java EE ...";
+        wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2019-12/R/eclipse-jee-2019-12-R-linux-gtk-x86_64.tar.gz&r=1'
+      fi
+
+      if [ -d "${TARGET_DIRECTORY}/eclipse" ]; then
+        echo "Eclipse was already installed"
+      else
+        echo "Extracting Eclipse Java EE ..."
+        tar -xvzf ${TARGET_DIRECTORY}/eclipse-jee.tar.gz && \
+          rm ${TARGET_DIRECTORY}/eclipse-jee.tar.gz
+
+        echo "Configuring eclipse.ini..."
+        ECLIPSE_INI=${ECLIPSE_HOME}/eclipse.ini
+        sed 's/-Xms.*/-Xms1024m/g' -i ${ECLIPSE_INI}
+        sed 's/-Xmx.*/-Xmx4096m/g' -i ${ECLIPSE_INI}
+
+        JAVA_BIN_PATH=${HOME}/.sdkman/candidates/java/current/bin
+        echo "Configuring Eclipse VM ..."
+        sed "s#-vmargs#-vm\n${JAVA_BIN_PATH}\n-vmargs#" -i ${ECLIPSE_INI}
+      fi
     else
-      echo "Downloading Eclipse Java EE ...";
-      wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2019-12/R/eclipse-jee-2019-12-R-linux-gtk-x86_64.tar.gz&r=1'
-    fi
-
-    if [ -d "${TARGET_DIRECTORY}/eclipse" ]; then
-      echo "Eclipse was already installed"
-    else
-      echo "Extracting Eclipse Java EE ..."
-      tar -xvzf ${TARGET_DIRECTORY}/eclipse-jee.tar.gz && \
-        rm ${TARGET_DIRECTORY}/eclipse-jee.tar.gz
-
-      echo "Configuring eclipse.ini..."
-      ECLIPSE_INI=${ECLIPSE_HOME}/eclipse.ini
-      sed 's/-Xms.*/-Xms1024m/g' -i ${ECLIPSE_INI}
-      sed 's/-Xmx.*/-Xmx4096m/g' -i ${ECLIPSE_INI}
-
-      JAVA_BIN_PATH=${HOME}/.sdkman/candidates/java/current/bin
-      echo "Configuring Eclipse VM ..."
-      sed "s#-vmargs#-vm\n${JAVA_BIN_PATH}\n-vmargs#" -i ${ECLIPSE_INI}
+      echo "Eclipse is already installed"
     fi
 
     ECLIPSE_DESKTOP_FILE_DIRECTORY=${HOME}/.local/share/applications
@@ -479,6 +487,20 @@ function install_dart() {
     sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
     sudo apt-get update
     sudo apt-get install -y dart
+  else
+    echo "Dart is already installed"    
+  fi
+}
+
+function install_brave_browser() {
+  if ! [ -x "$(command -v dart)" ]; then
+    echo "Installing brave-browser..."  
+    curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
+    echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+    sudo apt update
+    sudo apt install -y brave-browser
+  else
+    echo "Brave is already installed"    
   fi
 }
 
@@ -516,6 +538,7 @@ function main() {
   [ -z "$CONFIGURE_ALIASES" ] && CONFIGURE_ALIASES="y"
   [ -z "$INSTALL_CODE" ] && INSTALL_CODE="y"
   [ -z "$INSTALL_ECLIPSE" ] && INSTALL_ECLIPSE="y"
+  [ -z "$INSTALL_BRAVE" ] && INSTALL_BRAVE="y"  
 
   [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="n"
   [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="n"
@@ -583,6 +606,8 @@ function main() {
   [ $INSTALL_ANTLR == "y" ] && install_antlr
 
   [ $CONFIGURE_ALIASES == "y" ] && configure_aliases
+
+  [ $INSTALL_BRAVE == "y" ] && install_brave_browser
 
   [ $INSTALL_SNAPD == "y" ] && install_snapd
   [ $INSTALL_IDEA == "y" ] && install_idea

@@ -53,6 +53,7 @@ This script installs the following tools/programs by default:
 * Code
 * Vim
 * Meson
+* Brave Browser
 
 And by environment variables:
 
