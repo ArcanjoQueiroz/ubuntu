@@ -12,9 +12,15 @@ The following example shows how to use the installation script:
 curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
 ```
 
+or
+
+```sh
+wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' && chmod u+x install.sh && ./install.sh
+```
+
 ### What does install.sh install?
 
-This script installs the following tools/programs:
+This script installs the following tools/programs by default:
 
 * Snap
 * Terminator
@@ -22,28 +28,29 @@ This script installs the following tools/programs:
 * Meld
 * Docker CE
 * Docker-Compose 1.25.0
-
 * Java 13.0.1
 * Maven 3.6.3
-* Spring Boot CLI 2.2.2.RELEASE
 * Node.js v13.5.0
-* GCC 8
-* Kotlin 1.3.61
-* Gradle 5.6.1
-* Python 3.7
-* Leiningen 2.9.0
-
-* Visualvm 1.4.4
-* Google Java Formatter 1.7
-* Antlr 4.7.2
-
-And the IDEs/Editors:
-
-* IntelliJ IDEA Community Edition
-* Android Studio
 * Eclipse Java EE
 * Code
 * Vim
+* Meson
+
+And by environment variables:
+
+* Golang
+* Dart
+* Python 3.7
+* GCC 8
+* Spring Boot CLI 2.2.2.RELEASE
+* Kotlin 1.3.61
+* Gradle 5.6.1
+* Leiningen 2.9.0
+* Visualvm 1.4.4
+* Google Java Formatter 1.7
+* Antlr 4.7.2
+* IntelliJ IDEA Community Edition
+* Android Studio
 
 ### Compatibility
 

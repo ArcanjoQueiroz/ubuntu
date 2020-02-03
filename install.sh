@@ -472,6 +472,16 @@ function install_meson() {
   sudo apt-get install -y ninja-build meson
 }
 
+function install_dart() {
+  if ! [ -x "$(command -v dart)" ]; then
+    echo "Installing dart..."
+    sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+    sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
+    sudo apt-get update
+    sudo apt-get install -y dart
+  fi
+}
+
 # Main
 
 function main() {
@@ -490,10 +500,8 @@ function main() {
   fi
 
   [ -z "$INSTALL_LIBRARIES" ] && INSTALL_LIBRARIES="y"
-  [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="y"
   [ -z "$INSTALL_SNAPD" ] && INSTALL_SNAPD="y"
   [ -z "$INSTALL_GNOME_TWEAK_TOOL" ] && INSTALL_GNOME_TWEAK_TOOL="y"
-  [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="y"
   [ -z "$INSTALL_GIT" ] && INSTALL_GIT="y"
   [ -z "$INSTALL_MELD" ] && INSTALL_MELD="y"
   [ -z "$INSTALL_VIM" ] && INSTALL_VIM="y"
@@ -501,23 +509,27 @@ function main() {
   [ -z "$INSTALL_SDKMAN" ] && INSTALL_SDKMAN="y"
   [ -z "$INSTALL_JAVA" ] && INSTALL_JAVA="y"
   [ -z "$INSTALL_MAVEN" ] && INSTALL_MAVEN="y"
-  [ -z "$INSTALL_SPRING" ] && INSTALL_SPRING="n"
   [ -z "$INSTALL_NVM" ] && INSTALL_NVM="y"
   [ -z "$INSTALL_NPM" ] && INSTALL_NPM="y"
   [ -z "$INSTALL_DOCKER" ] && INSTALL_DOCKER="y"
   [ -z "$INSTALL_MESON" ] && INSTALL_MESON="y"
   [ -z "$CONFIGURE_ALIASES" ] && CONFIGURE_ALIASES="y"
-  [ -z "$INSTALL_IDEA" ] && INSTALL_IDEA="n"
-  [ -z "$INSTALL_ANDROID_STUDIO" ] && INSTALL_ANDROID_STUDIO="n"
   [ -z "$INSTALL_CODE" ] && INSTALL_CODE="y"
   [ -z "$INSTALL_ECLIPSE" ] && INSTALL_ECLIPSE="y"
+
+  [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="n"
+  [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="n"
+  [ -z "$INSTALL_SPRING" ] && INSTALL_SPRING="n"
+  [ -z "$INSTALL_IDEA" ] && INSTALL_IDEA="n"
+  [ -z "$INSTALL_ANDROID_STUDIO" ] && INSTALL_ANDROID_STUDIO="n"
   [ -z "$INSTALL_GRADLE" ] && INSTALL_GRADLE="n"
   [ -z "$INSTALL_KOTLIN" ] && INSTALL_KOTLIN="n"
   [ -z "$INSTALL_VISUALVM" ] && INSTALL_VISUALVM="n"
   [ -z "$INSTALL_GOOGLE_JAVA_FORMAT" ] && INSTALL_GOOGLE_JAVA_FORMAT="n"
   [ -z "$INSTALL_ANTLR" ] && INSTALL_ANTLR="n"
-  [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="n"
   [ -z "$INSTALL_LEININGEN" ] && INSTALL_LEININGEN="n"
+  [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="n"
+  [ -z "$INSTALL_DART" ] && INSTALL_DART="n"
 
   echo "Preparing installation..."
 
@@ -548,7 +560,6 @@ function main() {
 
   [ $INSTALL_GCC8 == "y" ] && install_gcc8
   [ $INSTALL_PYTHON3 == "y" ] && install_python3
-  [ $INSTALL_GOLANG == "y" ] && install_golang
 
   [ $INSTALL_NVM == "y" ] && install_nvm
   [ $INSTALL_NPM == "y" ] && install_npm
@@ -562,8 +573,9 @@ function main() {
   [ $INSTALL_VISUALVM == "y" ] && install_visualvm
   [ $INSTALL_LEININGEN == "y" ] && install_leiningen
 
-  [ $INSTALL_IDEA == "y" ] && install_idea
-  [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
+  [ $INSTALL_GOLANG == "y" ] && install_golang
+  [ $INSTALL_DART == "y" ] && install_dart
+
   [ $INSTALL_CODE == "y" ] && install_code
   [ $INSTALL_ECLIPSE == "y" ] && install_eclipse
 
@@ -573,11 +585,9 @@ function main() {
   [ $CONFIGURE_ALIASES == "y" ] && configure_aliases
 
   [ $INSTALL_SNAPD == "y" ] && install_snapd
-
   [ $INSTALL_IDEA == "y" ] && install_idea
   [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
   [ $INSTALL_CODE == "y" ] && install_code
-
   [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
 
   echo "Installation was finished. Happy coding...!!!"
