@@ -488,19 +488,19 @@ function install_dart() {
     sudo apt-get update
     sudo apt-get install -y dart
   else
-    echo "Dart is already installed"    
+    echo "Dart is already installed"
   fi
 }
 
 function install_brave_browser() {
   if ! [ -x "$(command -v dart)" ]; then
-    echo "Installing brave-browser..."  
+    echo "Installing brave-browser..."
     curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
     echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
     sudo apt update
     sudo apt install -y brave-browser
   else
-    echo "Brave is already installed"    
+    echo "Brave is already installed"
   fi
 }
 
@@ -538,7 +538,7 @@ function main() {
   [ -z "$CONFIGURE_ALIASES" ] && CONFIGURE_ALIASES="y"
   [ -z "$INSTALL_CODE" ] && INSTALL_CODE="y"
   [ -z "$INSTALL_ECLIPSE" ] && INSTALL_ECLIPSE="y"
-  [ -z "$INSTALL_BRAVE" ] && INSTALL_BRAVE="y"  
+  [ -z "$INSTALL_BRAVE" ] && INSTALL_BRAVE="y"
 
   [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="n"
   [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="n"
@@ -615,7 +615,7 @@ function main() {
   [ $INSTALL_CODE == "y" ] && install_code
   [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
 
-  echo "Installation was finished. Happy coding...!!!"
+  echo "Installation was finished. Reboot your system and happy coding...!!!"
 }
 
 main
