@@ -18,6 +18,24 @@ or
 wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' && chmod u+x install.sh && ./install.sh
 ```
 
+or even:
+
+```sh
+INSTALL_GCC8="y" \
+INSTALL_PYTHON3="y" \
+INSTALL_SPRING="y" \
+INSTALL_IDEA="y" \
+INSTALL_ANDROID_STUDIO="y" \
+INSTALL_GRADLE="y" \
+INSTALL_KOTLIN="y" \
+INSTALL_VISUALVM="y" \
+INSTALL_GOOGLE_JAVA_FORMAT="y" \
+INSTALL_ANTLR="y" \
+INSTALL_LEININGEN="y" \
+INSTALL_GOLANG="y" \
+INSTALL_DART="y" && curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
+```
+
 ### What does install.sh install?
 
 This script installs the following tools/programs by default:
