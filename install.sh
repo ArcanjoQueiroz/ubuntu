@@ -486,7 +486,7 @@ function install_dart() {
     sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
     sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
     sudo apt-get update
-    sudo apt-get install -y dart
+    sudo apt-get install -y dart && sudo update-alternatives --install /usr/bin/pub pub /usr/lib/dart/bin/pub 0
   else
     echo "Dart is already installed"
   fi
