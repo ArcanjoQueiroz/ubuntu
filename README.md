@@ -33,7 +33,16 @@ INSTALL_GOOGLE_JAVA_FORMAT="y" \
 INSTALL_ANTLR="y" \
 INSTALL_LEININGEN="y" \
 INSTALL_GOLANG="y" \
-INSTALL_DART="y" && curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
+INSTALL_DART="y" \
+INSTALL_KUBECTL="y" \
+INSTALL_VIRTUALBOX="y" \
+INSTALL_MINIKUBE="y" \
+INSTALL_GIMP="y" \
+INSTALL_DROPBOX="y" \
+INSTALL_ADAPTA="y" \
+INSTALL_PAPERICON="y" \
+INSTALL_CHROME="y" \
+INSTALL_VLC="y" && curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
 ```
 
 ### What does install.sh install?
@@ -70,7 +79,16 @@ And by environment variables:
 * Antlr 4.7.2
 * IntelliJ IDEA Community Edition
 * Android Studio
-
+* Kubectl
+* Virtualbox
+* Minikube
+* Gimp
+* Dropbox
+* Adapta
+* Paper Icon
+* Google Chrome
+* VLC
+  
 ### Compatibility
 
 This script is compatible with:

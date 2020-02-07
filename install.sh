@@ -349,19 +349,25 @@ function install_android_studio() {
 }
 
 function install_golang() {
-  echo "Installing Golang..."
-  sudo apt-get install golang-go go-dep -y && \
-  mkdir -p ${HOME}/golang/src && \
-  echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile
+  if ! [ -x "$(command -v go)" ]; then
+    echo "Installing Golang..."
+    sudo apt-get install golang-go go-dep -y && \
+    mkdir -p ${HOME}/golang/src && \
+    echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile
+  else
+    echo "GoLang is already installed"
+  fi
 }
 
 function install_google_java_format() {
   GOOGLE_JAVA_FORMAT_VERSION=1.7
-  echo "Installing Google Java Formatter $GOOGLE_JAVA_FORMAT_VERSION..."
   mkdir -p ${HOME}/bin
   if [ ! -f "${HOME}/bin/google-java-format.jar" ]; then
+    echo "Installing Google Java Formatter $GOOGLE_JAVA_FORMAT_VERSION..."
     wget https://github.com/google/google-java-format/releases/download/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar && \
       mv google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar ${HOME}/bin/google-java-format.jar
+  else
+    echo "Google Java Formatter is already installed"      
   fi
   ALIAS=$(cat ~/.bashrc | grep 'alias google-format=')
   if [ -z "${ALIAS}" ]; then
@@ -428,11 +434,13 @@ Name[en]=Eclipse" > $ECLIPSE_DESKTOP_FILE_DIRECTORY/eclipse.desktop
 
 function install_antlr() {
   ANTLR_VERSION=4.7.2
-  echo "Installing Antlr $ANTLR_VERSION..."
   mkdir -p ${HOME}/bin
   if [ ! -f "${HOME}/bin/antlr.jar" ]; then
+    echo "Installing Antlr $ANTLR_VERSION..."  
     wget https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar && \
         mv antlr-${ANTLR_VERSION}-complete.jar ${HOME}/bin/antlr.jar
+  else
+    echo "Antlr is already installed"
   fi
   ALIAS=$(cat ~/.bashrc | grep 'alias antlr=')
   if [ -z "${ALIAS}" ]; then
@@ -507,6 +515,96 @@ function install_brave_browser() {
   fi
 }
 
+function install_kubectl() {
+  if ! [ -x "$(command -v kubectl)" ]; then
+    curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && chmod u+x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+  else
+    echo "Kubectl is already installed"
+  fi
+}
+
+function install_virtualbox() {
+  if ! [ -x "$(command -v virtualbox)" ]; then
+    VIRTUALBOX_VERSION=6.1.2
+    VIRTUALBOX_RELEASE_NUMBER=135662
+    curl -Lo virtualbox "https://download.virtualbox.org/virtualbox/${VIRTUALBOX_VERSION}/VirtualBox-${VIRTUALBOX_VERSION}-${VIRTUALBOX_RELEASE_NUMBER}-Linux_amd64.run" && chmod u+x virtualbox
+    sudo ./virtualbox && rm virtualbox
+  else
+    echo "Virtualbox is already installed"
+  fi
+}
+
+function install_minikube() {
+  if ! [ -x "$(command -v minikube)" ]; then
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod u+x minikube
+    sudo mkdir -p /usr/local/bin/
+    sudo install minikube /usr/local/bin/
+    rm minikube
+  else
+    echo "Minikube is already installed"
+  fi
+}
+
+function install_gimp() {
+  if ! [ -x "$(command -v gimp)" ]; then
+    sudo apt-get install gimp -y
+  else
+    echo "Gimp is already installed"
+  fi
+}
+
+function install_dropbox() {
+  if ! [ -x "$(command -v dropbox)" ]; then
+    RELEASE_DATE="2019.02.14"
+    sudo apt-get install libpango1.0-0 python3-gpg -y
+    wget -O dropbox.deb "https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_${RELEASE_DATE}_amd64.deb" && \
+        sudo dpkg -i ./dropbox.deb && \
+        rm ./dropbox.deb
+  else
+    echo "Dropbox is already installed"
+  fi
+}
+
+function install_adapta() {
+  PPA_NAME=tista/adapta
+  cat /etc/apt/sources.list /etc/apt/sources.list.d/* | grep ${PPA_NAME} | grep -v '^#' > /dev/null
+  if [ $? -eq 1 ]; then
+    sudo apt-add-repository "ppa:${PPA_NAME}" -y && sudo apt-get update
+  else
+    echo "ppa:${PPA_NAME} is already added"
+  fi
+  sudo apt-get install adapta-gtk-theme -y
+}
+
+function install_papericon() {
+  PPA_NAME=snwh/ppa
+  cat /etc/apt/sources.list /etc/apt/sources.list.d/* | grep ${PPA_NAME} | grep -v '^#' > /dev/null
+  if [ $? -eq 1 ]; then
+    sudo apt-add-repository "ppa:${PPA_NAME}" -y && sudo apt-get update
+  else
+    echo "ppa:${PPA_NAME} is already added"
+  fi
+  sudo apt-get install paper-icon-theme -y
+}
+
+function install_chrome() {
+  if ! [ -x "$(command -v google-chrome)" ]; then
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+      sudo dpkg -i google-chrome-stable_current_amd64.deb && \
+      rm google-chrome-stable_current_amd64.deb
+  else
+    echo "Google Chrome is already installed"
+  fi
+}
+
+function install_vlc() {
+  if ! [ -x "$(command -v vlc)" ]; then
+    sudo apt-get install vlc -y
+  else
+    echo "VLC is already installed"
+  fi
+}
+
 # Main
 
 function main() {
@@ -556,6 +654,16 @@ function main() {
   [ -z "$INSTALL_LEININGEN" ] && INSTALL_LEININGEN="n"
   [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="n"
   [ -z "$INSTALL_DART" ] && INSTALL_DART="n"
+
+  [ -z "$INSTALL_KUBECTL" ] && INSTALL_KUBECTL="n"
+  [ -z "$INSTALL_VIRTUALBOX" ] && INSTALL_VIRTUALBOX="n"
+  [ -z "$INSTALL_MINIKUBE" ] && INSTALL_MINIKUBE="n"
+  [ -z "$INSTALL_GIMP" ] && INSTALL_GIMP="n"
+  [ -z "$INSTALL_DROPBOX" ] && INSTALL_DROPBOX="n"
+  [ -z "$INSTALL_ADAPTA" ] && INSTALL_ADAPTA="n"
+  [ -z "$INSTALL_PAPERICON" ] && INSTALL_PAPERICON="n"
+  [ -z "$INSTALL_CHROME" ] && INSTALL_CHROME="n"
+  [ -z "$INSTALL_VLC" ] && INSTALL_VLC="n"
 
   echo "Preparing installation..."
 
@@ -617,6 +725,16 @@ function main() {
   [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
   [ $INSTALL_CODE == "y" ] && install_code
   [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
+
+  [ $INSTALL_KUBECTL == "y" ] && install_kubectl
+  [ $INSTALL_VIRTUALBOX == "y" ] && install_virtualbox
+  [ $INSTALL_MINIKUBE == "y" ] && install_minikube
+  [ $INSTALL_GIMP == "y" ] && install_gimp
+  [ $INSTALL_DROPBOX == "y" ] && install_dropbox
+  [ $INSTALL_ADAPTA == "y" ] && install_adapta
+  [ $INSTALL_PAPERICON == "y" ] && install_papericon
+  [ $INSTALL_CHROME == "y" ] && install_chrome
+  [ $INSTALL_VLC == "y" ] && install_vlc
 
   echo "Installation was finished. Reboot your system and happy coding...!!!"
 }
