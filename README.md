@@ -21,11 +21,14 @@ wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/
 or even:
 
 ```sh
+INSTALL_TERMINATOR="y" \
 INSTALL_GCC8="y" \
 INSTALL_PYTHON3="y" \
 INSTALL_SPRING="y" \
 INSTALL_IDEA="y" \
 INSTALL_ANDROID_STUDIO="y" \
+INSTALL_ECLIPSE="y" \
+INSTALL_CODE="y" \
 INSTALL_GRADLE="y" \
 INSTALL_KOTLIN="y" \
 INSTALL_VISUALVM="y" \
@@ -42,6 +45,7 @@ INSTALL_DROPBOX="y" \
 INSTALL_ADAPTA="y" \
 INSTALL_PAPERICON="y" \
 INSTALL_CHROME="y" \
+INSTALL_BRAVE="y" \
 INSTALL_VLC="y" && curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
 ```
 
