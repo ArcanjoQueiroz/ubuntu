@@ -56,6 +56,7 @@ NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }")
 ! [ -z $NETWORKS ] && docker network rm $NETWORKS
 }
 
+alias me="curl ifconfig.me"
 alias pbcopy="xclip -selection clipboard"
 alias pbpaste="xclip -selection clipboard -o"
 alias clipboard="xsel -i --clipboard"' > ~/.bash_aliases
