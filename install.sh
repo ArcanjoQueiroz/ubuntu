@@ -211,6 +211,8 @@ function install_maven3() {
   MAVEN_VERSION=3.6.3
   echo "Installing Maven $MAVEN_VERSION..."
   sdk install maven $MAVEN_VERSION
+  echo 'alias mci="mvn clean install"
+alias mcio="mvn clean install -o"' >> ${HOME}/.bash_aliases
 }
 
 function install_spring() {
@@ -351,9 +353,13 @@ function install_android_studio() {
 function install_golang() {
   if ! [ -x "$(command -v go)" ]; then
     echo "Installing Golang..."
-    sudo apt-get install golang-go go-dep -y && \
+    sudo snap install --classic go && \
     mkdir -p ${HOME}/golang/src && \
     echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile
+
+    echo "Installing godep..."
+    curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
+    echo 'alias dep="${GOPATH}/bin/dep"' >> ${HOME}/.bash_aliases
   else
     echo "GoLang is already installed"
   fi
@@ -367,7 +373,7 @@ function install_google_java_format() {
     wget https://github.com/google/google-java-format/releases/download/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar && \
       mv google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar ${HOME}/bin/google-java-format.jar
   else
-    echo "Google Java Formatter is already installed"      
+    echo "Google Java Formatter is already installed"
   fi
   ALIAS=$(cat ~/.bashrc | grep 'alias google-format=')
   if [ -z "${ALIAS}" ]; then
@@ -436,7 +442,7 @@ function install_antlr() {
   ANTLR_VERSION=4.7.2
   mkdir -p ${HOME}/bin
   if [ ! -f "${HOME}/bin/antlr.jar" ]; then
-    echo "Installing Antlr $ANTLR_VERSION..."  
+    echo "Installing Antlr $ANTLR_VERSION..."
     wget https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar && \
         mv antlr-${ANTLR_VERSION}-complete.jar ${HOME}/bin/antlr.jar
   else
