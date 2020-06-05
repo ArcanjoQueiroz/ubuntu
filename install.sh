@@ -274,46 +274,10 @@ function install_npm() {
   fi
 }
 
-function install_docker_using_snap() {
-  echo "Installing Docker using Snap..."
-
-  egrep -i "^docker" /etc/group;
-  if [ $? -eq 0 ]; then
-    echo "Group docker already exists"
-  else
-    sudo addgroup --system docker && \
-    sudo adduser $CURRENT_USER docker && \
-    newgrp docker
-  fi
-
-  sudo snap install docker && \
-  sudo snap connect docker:home
-  sudo snap disable docker
-  sudo snap enable docker
-}
-
-function install_docker_using_apt() {
-  if ! [ -x "$(command -v docker)" ]; then
-    echo "Installing Docker using Package Manager..."
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
-    sudo apt-get update && sudo apt-get install -y docker-ce && sudo usermod -aG docker $CURRENT_USER
-  else
-    echo "Docker is already installed"
-  fi
-}
-
 function install_docker() {
-  echo "Installing Docker..."
-  if is_mint; then
-    install_docker_using_snap
-  else
-    if is_ubuntu_19_10; then
-      install_docker_using_snap
-    else
-      install_docker_using_apt
-    fi
-  fi
+  curl -fsSL https://get.docker.com -o get-docker.sh && \
+  sudo sh get-docker.sh && \
+  sudo usermod -aG docker $CURRENT_USER
 }
 
 function install_docker_compose() {
@@ -339,16 +303,6 @@ function install_python3() {
   python3-wheel && \
   python3.7 -m pip install -U pip setuptools wheel --user && \
   python3.7 -m pip install -U "pylint<2.0.0" --user
-}
-
-function install_idea() {
-  echo "Installing Idea..."
-  sudo snap install intellij-idea-community --classic
-}
-
-function install_android_studio() {
-  echo "Installing Android Studio..."
-  sudo snap install android-studio --classic
 }
 
 function install_golang() {
@@ -485,16 +439,26 @@ function install_snapd() {
   fi
 }
 
-function install_tweak_tool() {
-  if is_ubuntu; then
-    echo "Installing Gnome Tweak Tool..."
-    sudo apt-get install -y gnome-tweak-tool
-  fi
+function install_idea() {
+  echo "Installing Idea..."
+  sudo snap install intellij-idea-community --classic
+}
+
+function install_android_studio() {
+  echo "Installing Android Studio..."
+  sudo snap install android-studio --classic
 }
 
 function install_code() {
   echo "Installing Code..."
   sudo snap install code --classic
+}
+
+function install_tweak_tool() {
+  if is_ubuntu; then
+    echo "Installing Gnome Tweak Tool..."
+    sudo apt-get install -y gnome-tweak-tool
+  fi
 }
 
 function install_meson() {
