@@ -428,7 +428,8 @@ if [ "${LANGUAGE}" == "Java" ]; then
 fi
 }
 alias antlr=runAntlr
-alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"' >> ~/.bashrc
+alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"
+alias antlr4="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.Tool"' >> ~/.bashrc
   fi
 }
 
