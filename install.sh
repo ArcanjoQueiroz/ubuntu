@@ -410,24 +410,9 @@ function install_antlr() {
   else
     echo "Antlr is already installed"
   fi
-  ALIAS=$(cat ~/.bashrc | grep 'alias antlr=')
+  ALIAS=$(cat ~/.bashrc | grep 'alias antlr4=')
   if [ -z "${ALIAS}" ]; then
-    echo 'function runAntlr() {
-LANGUAGE=Java
-if [ "$#" -eq 1 ]; then
-  FILTER=$1
-elif [ "$#" -eq 2 ]; then
-  FILTER=$1
-  LANGUAGE=$2
-else
-  FILTER=*.g4
-fi
-find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/antlr.jar -Dlanguage=${LANGUAGE} {} \;
-if [ "${LANGUAGE}" == "Java" ]; then
-  javac -cp ${HOME}/bin/antlr.jar *.java
-fi
-}
-alias antlr=runAntlr
+    echo 'export CLASSPATH=".:${HOME}/bin/antlr.jar:$CLASSPATH"
 alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"
 alias antlr4="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.Tool"' >> ~/.bashrc
   fi
