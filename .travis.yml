@@ -4,4 +4,4 @@ services:
   - docker
 
 script:
-    - bash test.sh
+    - bash test_ubuntu-20.04.sh

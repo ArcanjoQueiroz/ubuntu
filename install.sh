@@ -23,12 +23,8 @@ function is_mint() {
     ( [ $VERSION_ID == \""19\"" ] ||
       [ $VERSION_ID == \""19.1\"" ] ||
       [ $VERSION_ID == \""19.2\"" ] ||
-      [ $VERSION_ID == \""19.3\"" ] )
-  return $?
-}
-
-function is_ubuntu_19_10() {
-  [ $DISTRIB_ID == "ubuntu" ] && [ $VERSION_ID == \""19.10\"" ]
+      [ $VERSION_ID == \""19.3\"" ] ||
+      [ $VERSION_ID == \""20\"" ] )
   return $?
 }
 
@@ -36,7 +32,8 @@ function is_ubuntu() {
   [ $DISTRIB_ID == "ubuntu" ] && \
       ( [ $VERSION_ID == \""18.04\"" ] || \
         [ $VERSION_ID == \""19.04\"" ] || \
-        [ $VERSION_ID == \""19.10\"" ] )
+        [ $VERSION_ID == \""19.10\"" ] || \
+        [ $VERSION_ID == \""20.04\"" ] )
   return $?
 }
 
@@ -275,8 +272,16 @@ function install_npm() {
 }
 
 function install_docker() {
-  curl -fsSL https://get.docker.com -o get-docker.sh && \
-  sudo sh get-docker.sh && \
+  echo "Installing Docker..."
+  if is_mint; then
+    sudo apt-get update && sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable" && \
+    sudo apt-get update && \
+    sudo apt-get -y install docker-ce docker-compose
+  else
+    curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+  fi
   sudo usermod -aG docker $CURRENT_USER
 }
 
@@ -578,10 +583,12 @@ function main() {
     echo "- Ubuntu 18.04"
     echo "- Ubuntu 19.04"
     echo "- Ubuntu 19.10"
+    echo "- Ubuntu 20.04"
     echo "- Linux Mint 19"
     echo "- Linux Mint 19.1"
     echo "- Linux Mint 19.2"
     echo "- Linux Mint 19.3"
+    echo "- Linux Mint 20"
     echo "Sorry"
     exit 1
   fi

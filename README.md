@@ -100,10 +100,12 @@ This script is compatible with:
 * Ubuntu 18.04
 * Ubuntu 19.04
 * Ubuntu 19.10
+* Ubuntu 20.04
 * Linux Mint 19
 * Linux Mint 19.1
 * Linux Mint 19.2
 * Linux Mint 19.3
+* Linux Mint 20
 
 ### Licensing
 
