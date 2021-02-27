@@ -373,6 +373,8 @@ function main() {
     sudo apt-get update
   fi
 
+  [ -z "$INSTALL_VIRTUALBOX" ] && INSTALL_VIRTUALBOX="y"
+
   install_libraries && \
   install_terminator && \
   install_vim && \
@@ -392,9 +394,14 @@ function main() {
   install_micro && \
   install_code && \
   install_zsh && \
-  install_golang && \
-  install_virtualbox && \
-  echo "Installation was finished. Reboot your system and happy coding...!!!" && \
+  install_golang
+  SUCCESS=$?
+
+  [ $INSTALL_VIRTUALBOX == "y" ] && [ $SUCCESS == 0 ] && install_virtualbox
+
+  SUCCESS=$?
+
+  [ $SUCCESS == 0 ] && echo "Installation was finished. Reboot your system and happy coding...!!!" && \
   echo "Tip: Go to https://ohmyz.sh/ and install Oh My Zsh!! :D"
 }
 
