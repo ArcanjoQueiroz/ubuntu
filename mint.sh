@@ -346,6 +346,10 @@ function install_code() {
   fi    
 }
 
+function install_zsh() {
+  sudo apt-get install zsh -y     
+}
+
 # Main
 
 function main() {
@@ -394,6 +398,7 @@ function main() {
   install_virtualbox && \
   install_micro && \
   install_code && \
+  install_zsh && \
   echo "Installation was finished. Reboot your system and happy coding...!!!"
 }
 
