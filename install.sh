@@ -330,17 +330,22 @@ function install_golang() {
   if ! [ -x "$(which go)" ]; then
     echo "Installing Golang..."
     GO_VERSION=go1.16
-    cd ~ && wget https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz -O ${GO_VERSION}.linux-amd64.tar.gz && \
-      tar -xzf ${GO_VERSION}.linux-amd64.tar.gz && \
+    cd ~
+    if [ ! -f "${GO_VERSION}.linux-amd64.tar.gz" ]; then
+      wget https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz -O ${GO_VERSION}.linux-amd64.tar.gz
+    fi
+    tar -xzf ${GO_VERSION}.linux-amd64.tar.gz && \
       mv go ${GO_VERSION} && \
       sudo mv ${GO_VERSION} /usr/local/${GO_VERSION} && \
       sudo ln -sf /usr/local/${GO_VERSION} /usr/local/go && \
       rm ${GO_VERSION}.linux-amd64.tar.gz && \
       mkdir -p ${HOME}/golang && \
       echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile && \
-      echo 'export PATH=${PATH}:/usr/local/go/bin' >> ${HOME}/.profile && source ${HOME}/.profile && \
+      echo 'export PATH=${PATH}:/usr/local/go/bin' >> ${HOME}/.profile && \
+      echo 'export GOBIN=/usr/local/go/bin' >> ${HOME}/.profile && \
+      source ${HOME}/.profile && \
       echo "Installing godep..." && \
-      cd ~ && curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
+      curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
       echo 'alias dep="${GOPATH}/bin/dep"' >> ${HOME}/.bash_aliases
   else
     echo "GoLang is already installed"
