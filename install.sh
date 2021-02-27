@@ -397,11 +397,11 @@ function main() {
   install_golang
   SUCCESS=$?
 
-  [ $INSTALL_VIRTUALBOX == "y" ] && [ $SUCCESS == 0 ] && install_virtualbox
+  [ $INSTALL_VIRTUALBOX = "y" ] && [ $SUCCESS = 0 ] && install_virtualbox
 
   SUCCESS=$?
 
-  [ $SUCCESS == 0 ] && echo "Installation was finished. Reboot your system and happy coding...!!!" && \
+  [ $SUCCESS = 0 ] && echo "Installation was finished. Reboot your system and happy coding...!!!" && \
   echo "Tip: Go to https://ohmyz.sh/ and install Oh My Zsh!! :D"
 }
 
