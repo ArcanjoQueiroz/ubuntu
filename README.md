@@ -25,7 +25,7 @@ wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/
 
 ### What does the script install?
 
-Install.sh installs the following tools:
+*Install.sh* installs the following tools:
 
 * Terminator
 * Git
