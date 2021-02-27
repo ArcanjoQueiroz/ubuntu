@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/ArcanjoQueiroz/ubuntu.svg?branch=master)](https://travis-ci.org/ArcanjoQueiroz/ubuntu)
 
-This project is a shell script to install utilities, programming languages and binaries in Debian/Ubuntu-based operating systems in one command!!!
+This project is a shell script to install utilities, programming languages and binaries in Ubuntu/Mint operating systems in one command!!!
 
 ### Installing
 
-The following example shows how to use the installation script:
+The following example shows how to use the installation script for *Ubuntu Linux*:
 
 ```sh
 curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
@@ -47,6 +47,18 @@ INSTALL_PAPERICON="y" \
 INSTALL_CHROME="y" \
 INSTALL_BRAVE="y" \
 INSTALL_VLC="y" && curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
+```
+
+If you are using *Linux Mint 20.1+*, execute the following command:
+
+```sh
+curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/mint.sh' | bash
+```
+
+or
+
+```sh
+wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/mint.sh' && chmod u+x mint.sh && ./mint.sh
 ```
 
 ### What does install.sh install?
@@ -95,7 +107,7 @@ And by environment variables:
   
 ### Compatibility
 
-This script is compatible with:
+Ubuntu Script is compatible with:
 
 * Ubuntu 18.04
 * Ubuntu 19.04
