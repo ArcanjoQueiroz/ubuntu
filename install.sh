@@ -316,7 +316,7 @@ function install_code() {
     cd ~ && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
     sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/ && \
     sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' && \
-    sudo apt-get update && sudo apt-get install code -y
+    sudo apt-get update && sudo apt-get install code -y && rm packages.microsoft.gpg
   else
     echo "Code is already installed"
   fi    
@@ -338,10 +338,9 @@ function install_golang() {
       rm ${GO_VERSION}.linux-amd64.tar.gz && \
       mkdir -p ${HOME}/golang && \
       echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile && \
-      echo 'export PATH=${PATH}:/usr/local/go/bin' >> ${HOME}/.profile
-
-    echo "Installing godep..."
-    cd ~ && curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
+      echo 'export PATH=${PATH}:/usr/local/go/bin' >> ${HOME}/.profile && source ${HOME}/.profile && \
+      echo "Installing godep..." && \
+      cd ~ && curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
       echo 'alias dep="${GOPATH}/bin/dep"' >> ${HOME}/.bash_aliases
   else
     echo "GoLang is already installed"
