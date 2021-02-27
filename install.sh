@@ -1,42 +1,5 @@
 #!/bin/bash
 
-# Operating System Detection Functions
-
-function is_valid_os() {
-  export DISTRIB_ID=$(cat /etc/os-release | grep "^ID=" | cut -d '=' -f 2)
-  export VERSION_ID=$(cat /etc/os-release | grep "^VERSION_ID=" | cut -d '=' -f 2)
-
-  echo "Target Distribution: $DISTRIB_ID"
-  echo "Target Version: $VERSION_ID"
-
-  MINT="n"; UBUNTU="n"
-
-  is_mint && MINT="y"
-  is_ubuntu && UBUNTU="y"
-
-  [ $UBUNTU == "y" ] || [ $MINT == "y" ]
-  return $?
-}
-
-function is_mint() {
-  [ $DISTRIB_ID == "linuxmint" ] &&
-    ( [ $VERSION_ID == \""19\"" ] ||
-      [ $VERSION_ID == \""19.1\"" ] ||
-      [ $VERSION_ID == \""19.2\"" ] ||
-      [ $VERSION_ID == \""19.3\"" ] ||
-      [ $VERSION_ID == \""20\"" ] )
-  return $?
-}
-
-function is_ubuntu() {
-  [ $DISTRIB_ID == "ubuntu" ] && \
-      ( [ $VERSION_ID == \""18.04\"" ] || \
-        [ $VERSION_ID == \""19.04\"" ] || \
-        [ $VERSION_ID == \""19.10\"" ] || \
-        [ $VERSION_ID == \""20.04\"" ] )
-  return $?
-}
-
 # Configuration functions
 
 function configure_aliases() {
@@ -150,11 +113,6 @@ function install_libraries() {
         htop
 }
 
-function install_gcc8() {
-  echo "Installing GCC-8..."
-  sudo apt-get install -y gcc-8
-}
-
 function install_terminator() {
   echo "Installing Terminator..."
   sudo apt-get install -y terminator
@@ -191,7 +149,7 @@ function init_sdkman() {
 function install_sdkman() {
   if ! [ -x "$SDKMAN_DIR" ]; then
     echo "Installing SDKMan..."
-    curl -s "https://get.sdkman.io" | bash
+    cd ~ && curl -s "https://get.sdkman.io" | bash
   else
     echo "SKDMan is already installed"
   fi
@@ -199,48 +157,21 @@ function install_sdkman() {
   sdk update
 }
 
-function install_java13() {
-  JAVA_VERSION=13.0.2-zulu
-  echo "Installing Java $JAVA_VERSION..."
-  sdk install java $JAVA_VERSION
+function install_java() {
+  echo "Installing Java..."
+  sdk install java 11.0.10-zulu
 }
 
 function install_maven3() {
-  MAVEN_VERSION=3.6.3
-  echo "Installing Maven $MAVEN_VERSION..."
-  sdk install maven $MAVEN_VERSION
+  echo "Installing Maven..."
+  sdk install maven 3.6.3
   echo 'alias mci="mvn clean install"
 alias mcio="mvn clean install -o"' >> ${HOME}/.bash_aliases
 }
 
-function install_spring() {
-  SPRING_BOOT_VERSION=2.2.2.RELEASE
-  echo "Installing Spring Boot CLI $SPRING_BOOT_VERSION..."
-  sdk install springboot $SPRING_BOOT_VERSION
-}
-
 function install_visualvm() {
-  VISUALVM_VERSION=1.4.4
-  echo "Installing visualvm $VISUALVM_VERSION..."
-  sdk install visualvm $VISUALVM_VERSION
-}
-
-function install_gradle() {
-  GRADLE_VERSION=5.6.1
-  echo "Installing Gradle $GRADLE_VERSION..."
-  sdk install gradle $GRADLE_VERSION
-}
-
-function install_kotlin() {
-  KOTLIN_VERSION=1.3.61
-  echo "Installing Kotlin $KOTLIN_VERSION..."
-  sdk install kotlin $KOTLIN_VERSION
-}
-
-function install_leiningen() {
-  LEININGEN_VERSION=2.9.0
-  echo "Installing Leiningen $LEININGEN_VERSION..."
-  sdk install leiningen $LEININGEN_VERSION
+  echo "Installing visualvm..."
+  sdk install visualvm 1.4.4
 }
 
 function init_nvm() {
@@ -251,9 +182,8 @@ function init_nvm() {
 
 function install_nvm() {
   if ! [ -x "$NVM_DIR" ]; then
-    NVM_VERSION="v0.33.11"
-    echo "Installing NVM $NVM_VERSION..."
-    curl -o- "https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh" | bash && source ~/.bashrc
+    echo "Installing NVM..."
+    cd ~ && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash && source ~/.bashrc
     init_nvm
   else
     echo "NVM is already installed"
@@ -261,98 +191,30 @@ function install_nvm() {
 }
 
 function install_npm() {
-  NODE_VERSION=v13.5.0
-  if [ -x "$(command -v node)" ] && [ "$(node -v)" == $NODE_VERSION ]; then
-    echo "Node $NODE_VERSION is already installed"
+  if [ -x "$(command -v node)" ]; then
+    echo "Node is already installed"
   else
-    echo "Installing node $NODE_VERSION..."
     init_nvm
-    nvm install node $NODE_VERSION
+    nvm install node v14.8.0
   fi
 }
 
 function install_docker() {
   echo "Installing Docker..."
-  if is_mint; then
-    sudo apt-get update && sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common && \
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable" && \
-    sudo apt-get update && \
-    sudo apt-get -y install docker-ce docker-compose
-  else
-    curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
-  fi
+  sudo apt-get update && sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common && \
+  cd ~ && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable" && \
+  sudo apt-get update && \
+  sudo apt-get -y install docker-ce docker-compose
   sudo usermod -aG docker $CURRENT_USER
 }
 
 function install_docker_compose() {
   if ! [ -x "$(command -v docker-compose)" ]; then
-    DOCKER_COMPOSE_VERSION="1.25.0"
-    echo "Installing Docker-Compose $DOCKER_COMPOSE_VERSION..."
-    sudo curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
+    echo "Installing Docker-Compose ..."
+    cd ~ && sudo curl -L https://github.com/docker/compose/releases/download/1.28.5/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
   else
     echo "Docker-Compose is already installed"
-  fi
-}
-
-function install_python3() {
-  echo "Installing Python 3.7..."
-  sudo apt-get install -y virtualenv \
-  python3.7 \
-  python3.7-dev \
-  python3.7-venv \
-  python3.7-dbg \
-  python3-pip \
-  python3-virtualenv \
-  python3-setuptools \
-  python3-wheel && \
-  python3.7 -m pip install -U pip setuptools wheel --user && \
-  python3.7 -m pip install -U "pylint<2.0.0" --user
-}
-
-function install_golang() {
-  if ! [ -x "$(which go)" ]; then
-    echo "Installing Golang..."
-    GO_VERSION=go1.14.3
-    wget https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz -O ${GO_VERSION}.linux-amd64.tar.gz && \
-      tar -xzf ${GO_VERSION}.linux-amd64.tar.gz && \
-      mv go ${GO_VERSION} && \
-      sudo mv ${GO_VERSION} /usr/local/${GO_VERSION} && \
-      sudo ln -sf /usr/local/${GO_VERSION} /usr/local/go && \
-      rm ${GO_VERSION}.linux-amd64.tar.gz && \
-      mkdir -p ${HOME}/golang && \
-      echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile && \
-      echo 'export PATH=${PATH}:/usr/local/go/bin' >> ${HOME}/.profile
-
-    echo "Installing godep..."
-    curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
-      echo 'alias dep="${GOPATH}/bin/dep"' >> ${HOME}/.bash_aliases
-  else
-    echo "GoLang is already installed"
-  fi
-}
-
-function install_google_java_format() {
-  GOOGLE_JAVA_FORMAT_VERSION=1.7
-  mkdir -p ${HOME}/bin
-  if [ ! -f "${HOME}/bin/google-java-format.jar" ]; then
-    echo "Installing Google Java Formatter $GOOGLE_JAVA_FORMAT_VERSION..."
-    wget https://github.com/google/google-java-format/releases/download/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar && \
-      mv google-java-format-${GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar ${HOME}/bin/google-java-format.jar
-  else
-    echo "Google Java Formatter is already installed"
-  fi
-  ALIAS=$(cat ~/.bashrc | grep 'alias google-format=')
-  if [ -z "${ALIAS}" ]; then
-    echo 'function googleFormat() {
-if [ "$#" -eq 1 ]; then
-  FILTER=$1
-else
-  FILTER=*.java
-fi
-  find . -type f -name ${FILTER} -exec java -jar ${HOME}/bin/google-java-format.jar --replace {} \;
-}
-alias google-format=googleFormat' >> ~/.bashrc
   fi
 }
 
@@ -368,14 +230,14 @@ function install_eclipse() {
         echo "Eclipse File already downloaded";
       else
         echo "Downloading Eclipse Java EE ...";
-        wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2019-12/R/eclipse-jee-2019-12-R-linux-gtk-x86_64.tar.gz&r=1'
+        cd ~ && wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-12/R/eclipse-jee-2020-12-R-linux-gtk-x86_64.tar.gz'
       fi
 
       if [ -d "${TARGET_DIRECTORY}/eclipse" ]; then
         echo "Eclipse was already installed"
       else
         echo "Extracting Eclipse Java EE ..."
-        tar -xvzf ${TARGET_DIRECTORY}/eclipse-jee.tar.gz && \
+        cd ~ && tar -xvzf ${TARGET_DIRECTORY}/eclipse-jee.tar.gz && \
           rm ${TARGET_DIRECTORY}/eclipse-jee.tar.gz
 
         echo "Configuring eclipse.ini..."
@@ -405,80 +267,12 @@ Categories=Development;IDE;
 Name[en]=Eclipse" > $ECLIPSE_DESKTOP_FILE_DIRECTORY/eclipse.desktop
 }
 
-function install_antlr() {
-  ANTLR_VERSION=4.7.2
-  mkdir -p ${HOME}/bin
-  if [ ! -f "${HOME}/bin/antlr.jar" ]; then
-    echo "Installing Antlr $ANTLR_VERSION..."
-    wget https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar && \
-        mv antlr-${ANTLR_VERSION}-complete.jar ${HOME}/bin/antlr.jar
-  else
-    echo "Antlr is already installed"
-  fi
-  ALIAS=$(cat ~/.bashrc | grep 'alias antlr4=')
-  if [ -z "${ALIAS}" ]; then
-    echo 'export CLASSPATH=".:${HOME}/bin/antlr.jar:$CLASSPATH"
-alias grun="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.gui.TestRig"
-alias antlr4="java -cp .:${HOME}/bin/antlr.jar org.antlr.v4.Tool"' >> ~/.bashrc
-  fi
-}
-
-function install_snapd() {
-  if is_mint; then
-    echo "Installing Snap..."
-    sudo apt-get install -y snapd
-  fi
-}
-
-function install_idea() {
-  echo "Installing Idea..."
-  sudo snap install intellij-idea-community --classic
-}
-
-function install_android_studio() {
-  echo "Installing Android Studio..."
-  sudo snap install android-studio --classic
-}
-
-function install_code() {
-  echo "Installing Code..."
-  sudo snap install code --classic
-}
-
-function install_tweak_tool() {
-  if is_ubuntu; then
-    echo "Installing Gnome Tweak Tool..."
-    sudo apt-get install -y gnome-tweak-tool
-  fi
-}
-
-function install_meson() {
-  echo "Installing Meson..."
-  sudo apt-get install -y ninja-build meson
-}
-
-function install_dart() {
-  if ! [ -x "$(command -v dart)" ]; then
-    echo "Installing dart..."
-    sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
-    sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
-    sudo apt-get update
-    sudo apt-get install -y dart && \
-      sudo ln -sf /usr/lib/dart/bin/dart2js /usr/local/bin/dart2js && \
-      sudo ln -sf /usr/lib/dart/bin/dart2native /usr/local/bin/dart2native && \
-      sudo ln -sf /usr/lib/dart/bin/pub /usr/local/bin/pub
-  else
-    echo "Dart is already installed"
-  fi
-}
-
 function install_brave_browser() {
-  if ! [ -x "$(command -v dart)" ]; then
+  if ! [ -x "$(command -v brave-browser)" ]; then
     echo "Installing brave-browser..."
-    curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
-    echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-    sudo apt update
-    sudo apt install -y brave-browser
+    cd ~ && curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add - && \
+    echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list && \
+    sudo apt update && sudo apt install -y brave-browser
   else
     echo "Brave is already installed"
   fi
@@ -486,156 +280,77 @@ function install_brave_browser() {
 
 function install_kubectl() {
   if ! [ -x "$(command -v kubectl)" ]; then
-    curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && chmod u+x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+    cd ~ && curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && chmod u+x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
   else
     echo "Kubectl is already installed"
   fi
 }
 
+function install_helm3() {
+  if ! [ -x "$(command -v helm)" ]; then
+    cd ~ && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+  else
+    echo "Helm 3 is already installed"
+  fi    
+}
+
 function install_virtualbox() {
   if ! [ -x "$(command -v virtualbox)" ]; then
-    VIRTUALBOX_VERSION=6.1.2
-    VIRTUALBOX_RELEASE_NUMBER=135662
-    curl -Lo virtualbox "https://download.virtualbox.org/virtualbox/${VIRTUALBOX_VERSION}/VirtualBox-${VIRTUALBOX_VERSION}-${VIRTUALBOX_RELEASE_NUMBER}-Linux_amd64.run" && chmod u+x virtualbox
+    cd ~ && curl -Lo virtualbox "https://download.virtualbox.org/virtualbox/6.1.18/VirtualBox-6.1.18-142142-Linux_amd64.run" && chmod u+x virtualbox && \
     sudo ./virtualbox && rm virtualbox
   else
     echo "Virtualbox is already installed"
   fi
 }
 
-function install_minikube() {
-  if ! [ -x "$(command -v minikube)" ]; then
-    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod u+x minikube
-    sudo mkdir -p /usr/local/bin/
-    sudo install minikube /usr/local/bin/
-    rm minikube
+function install_micro() {
+  if ! [ -x "$(command -v micro)" ]; then
+    cd ~ && curl https://getmic.ro | bash && mv micro /usr/local/bin
   else
-    echo "Minikube is already installed"
-  fi
+    echo "Micro is already installed"
+  fi    
 }
 
-function install_gimp() {
-  if ! [ -x "$(command -v gimp)" ]; then
-    sudo apt-get install gimp -y
+function install_code() {
+  if ! [ -x "$(command -v code)" ]; then
+    cd ~ && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
+    sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/ && \
+    sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' && \
+    sudo apt-get update && sudo apt-get install code -y
   else
-    echo "Gimp is already installed"
-  fi
+    echo "Code is already installed"
+  fi    
 }
 
-function install_dropbox() {
-  if ! [ -x "$(command -v dropbox)" ]; then
-    RELEASE_DATE="2019.02.14"
-    sudo apt-get install libpango1.0-0 python3-gpg -y
-    wget -O dropbox.deb "https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_${RELEASE_DATE}_amd64.deb" && \
-        sudo dpkg -i ./dropbox.deb && \
-        rm ./dropbox.deb
-  else
-    echo "Dropbox is already installed"
-  fi
+function install_zsh() {
+  sudo apt-get install zsh -y     
 }
 
-function install_adapta() {
-  PPA_NAME=tista/adapta
-  cat /etc/apt/sources.list /etc/apt/sources.list.d/* | grep ${PPA_NAME} | grep -v '^#' > /dev/null
-  if [ $? -eq 1 ]; then
-    sudo apt-add-repository "ppa:${PPA_NAME}" -y && sudo apt-get update
-  else
-    echo "ppa:${PPA_NAME} is already added"
-  fi
-  sudo apt-get install adapta-gtk-theme -y
-}
+function install_golang() {
+  if ! [ -x "$(which go)" ]; then
+    echo "Installing Golang..."
+    GO_VERSION=go1.16
+    cd ~ && wget https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz -O ${GO_VERSION}.linux-amd64.tar.gz && \
+      tar -xzf ${GO_VERSION}.linux-amd64.tar.gz && \
+      mv go ${GO_VERSION} && \
+      sudo mv ${GO_VERSION} /usr/local/${GO_VERSION} && \
+      sudo ln -sf /usr/local/${GO_VERSION} /usr/local/go && \
+      rm ${GO_VERSION}.linux-amd64.tar.gz && \
+      mkdir -p ${HOME}/golang && \
+      echo 'export GOPATH=${HOME}/golang' >> ${HOME}/.profile && \
+      echo 'export PATH=${PATH}:/usr/local/go/bin' >> ${HOME}/.profile
 
-function install_papericon() {
-  PPA_NAME=snwh/ppa
-  cat /etc/apt/sources.list /etc/apt/sources.list.d/* | grep ${PPA_NAME} | grep -v '^#' > /dev/null
-  if [ $? -eq 1 ]; then
-    sudo apt-add-repository "ppa:${PPA_NAME}" -y && sudo apt-get update
+    echo "Installing godep..."
+    cd ~ && curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
+      echo 'alias dep="${GOPATH}/bin/dep"' >> ${HOME}/.bash_aliases
   else
-    echo "ppa:${PPA_NAME} is already added"
-  fi
-  sudo apt-get install paper-icon-theme -y
-}
-
-function install_chrome() {
-  if ! [ -x "$(command -v google-chrome)" ]; then
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-      sudo dpkg -i google-chrome-stable_current_amd64.deb && \
-      rm google-chrome-stable_current_amd64.deb
-  else
-    echo "Google Chrome is already installed"
-  fi
-}
-
-function install_vlc() {
-  if ! [ -x "$(command -v vlc)" ]; then
-    sudo apt-get install vlc -y
-  else
-    echo "VLC is already installed"
+    echo "GoLang is already installed"
   fi
 }
 
 # Main
 
 function main() {
-  echo "Checking operating system..."
-  if ! is_valid_os; then
-    echo "Invalid operating system. This script is valid for: "
-    echo "- Ubuntu 18.04"
-    echo "- Ubuntu 19.04"
-    echo "- Ubuntu 19.10"
-    echo "- Ubuntu 20.04"
-    echo "- Linux Mint 19"
-    echo "- Linux Mint 19.1"
-    echo "- Linux Mint 19.2"
-    echo "- Linux Mint 19.3"
-    echo "- Linux Mint 20"
-    echo "Sorry"
-    exit 1
-  fi
-
-  [ -z "$INSTALL_LIBRARIES" ] && INSTALL_LIBRARIES="y"
-  [ -z "$INSTALL_SNAPD" ] && INSTALL_SNAPD="y"
-  [ -z "$INSTALL_GNOME_TWEAK_TOOL" ] && INSTALL_GNOME_TWEAK_TOOL="y"
-  [ -z "$INSTALL_GIT" ] && INSTALL_GIT="y"
-  [ -z "$INSTALL_MELD" ] && INSTALL_MELD="y"
-  [ -z "$INSTALL_VIM" ] && INSTALL_VIM="y"
-  [ -z "$INSTALL_TERMINATOR" ] && INSTALL_TERMINATOR="y"
-  [ -z "$INSTALL_SDKMAN" ] && INSTALL_SDKMAN="y"
-  [ -z "$INSTALL_JAVA" ] && INSTALL_JAVA="y"
-  [ -z "$INSTALL_MAVEN" ] && INSTALL_MAVEN="y"
-  [ -z "$INSTALL_NVM" ] && INSTALL_NVM="y"
-  [ -z "$INSTALL_NPM" ] && INSTALL_NPM="y"
-  [ -z "$INSTALL_DOCKER" ] && INSTALL_DOCKER="y"
-  [ -z "$INSTALL_MESON" ] && INSTALL_MESON="y"
-  [ -z "$CONFIGURE_ALIASES" ] && CONFIGURE_ALIASES="y"
-  [ -z "$INSTALL_CODE" ] && INSTALL_CODE="y"
-  [ -z "$INSTALL_ECLIPSE" ] && INSTALL_ECLIPSE="y"
-  [ -z "$INSTALL_BRAVE" ] && INSTALL_BRAVE="y"
-
-  [ -z "$INSTALL_GCC8" ] && INSTALL_GCC8="n"
-  [ -z "$INSTALL_PYTHON3" ] && INSTALL_PYTHON3="n"
-  [ -z "$INSTALL_SPRING" ] && INSTALL_SPRING="n"
-  [ -z "$INSTALL_IDEA" ] && INSTALL_IDEA="n"
-  [ -z "$INSTALL_ANDROID_STUDIO" ] && INSTALL_ANDROID_STUDIO="n"
-  [ -z "$INSTALL_GRADLE" ] && INSTALL_GRADLE="n"
-  [ -z "$INSTALL_KOTLIN" ] && INSTALL_KOTLIN="n"
-  [ -z "$INSTALL_VISUALVM" ] && INSTALL_VISUALVM="n"
-  [ -z "$INSTALL_GOOGLE_JAVA_FORMAT" ] && INSTALL_GOOGLE_JAVA_FORMAT="n"
-  [ -z "$INSTALL_ANTLR" ] && INSTALL_ANTLR="n"
-  [ -z "$INSTALL_LEININGEN" ] && INSTALL_LEININGEN="n"
-  [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="n"
-  [ -z "$INSTALL_DART" ] && INSTALL_DART="n"
-
-  [ -z "$INSTALL_KUBECTL" ] && INSTALL_KUBECTL="n"
-  [ -z "$INSTALL_VIRTUALBOX" ] && INSTALL_VIRTUALBOX="n"
-  [ -z "$INSTALL_MINIKUBE" ] && INSTALL_MINIKUBE="n"
-  [ -z "$INSTALL_GIMP" ] && INSTALL_GIMP="n"
-  [ -z "$INSTALL_DROPBOX" ] && INSTALL_DROPBOX="n"
-  [ -z "$INSTALL_ADAPTA" ] && INSTALL_ADAPTA="n"
-  [ -z "$INSTALL_PAPERICON" ] && INSTALL_PAPERICON="n"
-  [ -z "$INSTALL_CHROME" ] && INSTALL_CHROME="n"
-  [ -z "$INSTALL_VLC" ] && INSTALL_VLC="n"
-
   echo "Preparing installation..."
 
   if [ -z "$USER" ]; then
@@ -654,60 +369,29 @@ function main() {
     sudo apt-get update
   fi
 
-  [ $INSTALL_LIBRARIES == "y" ] && install_libraries
-  [ $INSTALL_GNOME_TWEAK_TOOL == "y" ] && install_tweak_tool
-
-  [ $INSTALL_GIT == "y" ] && install_git
-  [ $INSTALL_MELD == "y" ] && install_meld
-  [ $INSTALL_VIM == "y" ] && install_vim
-  [ $INSTALL_TERMINATOR == "y" ] && install_terminator
-  [ $INSTALL_MESON == "y" ] && install_meson
-
-  [ $INSTALL_GCC8 == "y" ] && install_gcc8
-  [ $INSTALL_PYTHON3 == "y" ] && install_python3
-
-  [ $INSTALL_NVM == "y" ] && install_nvm
-  [ $INSTALL_NPM == "y" ] && install_npm
-
-  [ $INSTALL_SDKMAN == "y" ] && install_sdkman
-  [ $INSTALL_JAVA == "y" ] && install_java13
-  [ $INSTALL_MAVEN == "y" ] && install_maven3
-  [ $INSTALL_SPRING == "y" ] && install_spring
-  [ $INSTALL_GRADLE == "y" ] && install_gradle
-  [ $INSTALL_KOTLIN == "y" ] && install_kotlin
-  [ $INSTALL_VISUALVM == "y" ] && install_visualvm
-  [ $INSTALL_LEININGEN == "y" ] && install_leiningen
-
-  [ $INSTALL_GOLANG == "y" ] && install_golang
-  [ $INSTALL_DART == "y" ] && install_dart
-
-  [ $INSTALL_CODE == "y" ] && install_code
-  [ $INSTALL_ECLIPSE == "y" ] && install_eclipse
-
-  [ $INSTALL_GOOGLE_JAVA_FORMAT == "y" ] && install_google_java_format
-  [ $INSTALL_ANTLR == "y" ] && install_antlr
-
-  [ $CONFIGURE_ALIASES == "y" ] && configure_aliases
-
-  [ $INSTALL_BRAVE == "y" ] && install_brave_browser
-
-  [ $INSTALL_SNAPD == "y" ] && install_snapd
-  [ $INSTALL_IDEA == "y" ] && install_idea
-  [ $INSTALL_ANDROID_STUDIO == "y" ] && install_android_studio
-  [ $INSTALL_CODE == "y" ] && install_code
-  [ $INSTALL_DOCKER == "y" ] && install_docker && install_docker_compose
-
-  [ $INSTALL_KUBECTL == "y" ] && install_kubectl
-  [ $INSTALL_VIRTUALBOX == "y" ] && install_virtualbox
-  [ $INSTALL_MINIKUBE == "y" ] && install_minikube
-  [ $INSTALL_GIMP == "y" ] && install_gimp
-  [ $INSTALL_DROPBOX == "y" ] && install_dropbox
-  [ $INSTALL_ADAPTA == "y" ] && install_adapta
-  [ $INSTALL_PAPERICON == "y" ] && install_papericon
-  [ $INSTALL_CHROME == "y" ] && install_chrome
-  [ $INSTALL_VLC == "y" ] && install_vlc
-
-  echo "Installation was finished. Reboot your system and happy coding...!!!"
+  install_libraries && \
+  install_terminator && \
+  install_vim && \
+  install_git && \
+  install_meld && \
+  install_sdkman && \
+  install_java && \
+  install_maven3 && \
+  install_nvm && \
+  install_npm && \
+  install_docker && \
+  install_docker_compose && \
+  install_eclipse && \
+  install_brave_browser && \
+  install_kubectl && \
+  install_helm3 && \
+  install_micro && \
+  install_code && \
+  install_zsh && \
+  install_golang && \
+  install_virtualbox && \
+  echo "Installation was finished. Reboot your system and happy coding...!!!" && \
+  echo "Tip: Go to https://ohmyz.sh/ and install Oh My Zsh!! :D"
 }
 
 main

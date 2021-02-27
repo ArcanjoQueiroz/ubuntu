@@ -18,106 +18,30 @@ or
 wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' && chmod u+x install.sh && ./install.sh
 ```
 
-or even:
-
-```sh
-INSTALL_TERMINATOR="y" \
-INSTALL_GCC8="y" \
-INSTALL_PYTHON3="y" \
-INSTALL_SPRING="y" \
-INSTALL_IDEA="y" \
-INSTALL_ANDROID_STUDIO="y" \
-INSTALL_ECLIPSE="y" \
-INSTALL_CODE="y" \
-INSTALL_GRADLE="y" \
-INSTALL_KOTLIN="y" \
-INSTALL_VISUALVM="y" \
-INSTALL_GOOGLE_JAVA_FORMAT="y" \
-INSTALL_ANTLR="y" \
-INSTALL_LEININGEN="y" \
-INSTALL_GOLANG="y" \
-INSTALL_DART="y" \
-INSTALL_KUBECTL="y" \
-INSTALL_VIRTUALBOX="y" \
-INSTALL_MINIKUBE="y" \
-INSTALL_GIMP="y" \
-INSTALL_DROPBOX="y" \
-INSTALL_ADAPTA="y" \
-INSTALL_PAPERICON="y" \
-INSTALL_CHROME="y" \
-INSTALL_BRAVE="y" \
-INSTALL_VLC="y" && curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
-```
-
-If you are using *Linux Mint 20.1+*, execute the following command:
-
-```sh
-curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/mint.sh' | bash
-```
-
-or
-
-```sh
-wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/mint.sh' && chmod u+x mint.sh && ./mint.sh
-```
-
 ### What does install.sh install?
 
 This script installs the following tools/programs by default:
 
-* Snap
 * Terminator
 * Git
 * Meld
 * Docker CE
-* Docker-Compose 1.25.0
-* Java 13.0.1
-* Maven 3.6.3
-* Node.js v13.5.0
+* Docker-Compose
+* Java
+* Maven
+* Node.js
 * Eclipse Java EE
 * Code
 * Vim
-* Meson
 * Brave Browser
-
-And by environment variables:
-
-* Golang
-* Dart
-* Python 3.7
-* GCC 8
-* Spring Boot CLI 2.2.2.RELEASE
-* Kotlin 1.3.61
-* Gradle 5.6.1
-* Leiningen 2.9.0
-* Visualvm 1.4.4
-* Google Java Formatter 1.7
-* Antlr 4.7.2
-* IntelliJ IDEA Community Edition
-* Android Studio
+* Visualvm
 * Kubectl
+* Helm 3
+* Micro editor
+* Code
+* Zsh
+* Golang
 * Virtualbox
-* Minikube
-* Gimp
-* Dropbox
-* Adapta
-* Paper Icon
-* Google Chrome
-* VLC
-  
-### Compatibility
-
-Ubuntu Script is compatible with:
-
-* Ubuntu 18.04
-* Ubuntu 19.04
-* Ubuntu 19.10
-* Ubuntu 20.04
-* Linux Mint 19
-* Linux Mint 19.1
-* Linux Mint 19.2
-* Linux Mint 19.3
-* Linux Mint 20
 
 ### Licensing
 
