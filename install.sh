@@ -374,6 +374,8 @@ function main() {
   fi
 
   [ -z "$INSTALL_VIRTUALBOX" ] && INSTALL_VIRTUALBOX="y"
+  [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="y"
+
 
   install_libraries && \
   install_terminator && \
@@ -393,15 +395,12 @@ function main() {
   install_helm3 && \
   install_micro && \
   install_code && \
-  install_zsh && \
-  install_golang
-  SUCCESS=$?
+  install_zsh
 
-  [ $INSTALL_VIRTUALBOX = "y" ] && [ $SUCCESS = 0 ] && install_virtualbox
+  [ $INSTALL_GOLANG = "y" ] install_golang
+  [ $INSTALL_VIRTUALBOX = "y" ] && install_virtualbox
 
-  SUCCESS=$?
-
-  [ $SUCCESS = 0 ] && echo "Installation was finished. Reboot your system and happy coding...!!!" && \
+  echo "Installation was finished. Reboot your system and happy coding...!!!" && \
   echo "Tip: Go to https://ohmyz.sh/ and install Oh My Zsh!! :D"
 }
 

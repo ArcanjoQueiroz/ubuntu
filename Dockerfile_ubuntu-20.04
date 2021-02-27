@@ -16,6 +16,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 COPY install.sh /root/install.sh
 RUN chmod u+x /root/install.sh
 
+ENV INSTALL_GOLANG=n
 ENV INSTALL_VIRTUALBOX=n
 
 RUN ./install.sh
