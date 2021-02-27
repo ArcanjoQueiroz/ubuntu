@@ -2,11 +2,16 @@
 
 [![Build Status](https://travis-ci.org/ArcanjoQueiroz/ubuntu.svg?branch=master)](https://travis-ci.org/ArcanjoQueiroz/ubuntu)
 
-This project is a shell script to install utilities, programming languages and binaries in Ubuntu/Mint operating systems in one command!!!
+This project is an installation script that allows the installation of programming languages, binaries and utilities in one command!!!
 
-### Installing
+### Supported Operating Systems
 
-The following example shows how to use the installation script for *Ubuntu Linux*:
+* Ubuntu
+* Linux Mint
+
+### Installation
+
+The following example shows how to use the installation script:
 
 ```sh
 curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' | bash
@@ -18,9 +23,9 @@ or
 wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' && chmod u+x install.sh && ./install.sh
 ```
 
-### What does install.sh install?
+### What does the script install?
 
-This script installs the following tools/programs by default:
+*Install.sh* installs the following tools:
 
 * Terminator
 * Git
