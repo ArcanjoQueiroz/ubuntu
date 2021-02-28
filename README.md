@@ -43,7 +43,6 @@ wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/
 * Kubectl
 * Helm 3
 * Micro editor
-* Code
 * Zsh
 * Golang
 * Virtualbox
