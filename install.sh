@@ -2,24 +2,73 @@
 
 # Configuration functions
 
-function configure_aliases() {
-  echo "Configuring Aliases..."
-  echo 'function docker-remove() {
-CONTAINER_IDS=$(docker ps -a -q)
-IMAGE_IDS=$(docker images -q)
-VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1)
-NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }")
+function configure_bash() {
+  echo "Configuring Bash..."
 
-! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS
-! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS
-! [ -z $VOLUMES ] && docker volume rm $VOLUMES
-! [ -z $NETWORKS ] && docker network rm $NETWORKS
+  cat ~/.bash_aliases | grep 'function docker-remove' > /dev/null
+  if [ $? = 1] ; then
+    echo 'function docker-remove() { CONTAINER_IDS=$(docker ps -a -q); IMAGE_IDS=$(docker images -q); VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1); NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }"); ! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS; ! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS; ! [ -z $VOLUMES ] && docker volume rm $VOLUMES; ! [ -z $NETWORKS ] && docker network rm $NETWORKS}' >> ~/.bash_aliases
+  fi
+
+  cat ~/.bash_aliases | grep 'alias me' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias me="curl ifconfig.me"' >> ~/.bash_aliases
+  fi
+
+  cat ~/.bash_aliases | grep 'alias pbcopy' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias pbcopy="xclip -selection clipboard"' >> ~/.bash_aliases
+  fi
+
+  cat ~/.bash_aliases | grep 'alias pbpaste' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias pbpaste="xclip -selection clipboard -o"' >> ~/.bash_aliases
+  fi
+
+  cat ~/.bash_aliases | grep 'alias clipboard' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias clipboard="xsel -i --clipboard"' >> ~/.bash_aliases
+  fi
 }
 
-alias me="curl ifconfig.me"
-alias pbcopy="xclip -selection clipboard"
-alias pbpaste="xclip -selection clipboard -o"
-alias clipboard="xsel -i --clipboard"' > ~/.bash_aliases
+function configure_zsh() {
+  echo "Configuring Zsh..."
+
+  cat ~/.zshrc | grep 'function docker-remove' > /dev/null
+  if [ $? = 1] ; then
+    echo 'function docker-remove() { CONTAINER_IDS=$(docker ps -a -q); IMAGE_IDS=$(docker images -q); VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1); NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }"); ! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS; ! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS; ! [ -z $VOLUMES ] && docker volume rm $VOLUMES; ! [ -z $NETWORKS ] && docker network rm $NETWORKS}' >> ~/.zshrc
+  fi
+
+  cat ~/.zshrc | grep 'alias me' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias me="curl ifconfig.me"' >> ~/.zshrc
+  fi
+
+  cat ~/.zshrc | grep 'alias pbcopy' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias pbcopy="xclip -selection clipboard"' >> ~/.zshrc
+  fi
+
+  cat ~/.zshrc | grep 'alias pbpaste' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias pbpaste="xclip -selection clipboard -o"' >> ~/.zshrc
+  fi
+
+  cat ~/.zshrc | grep 'alias clipboard' > /dev/null
+  if [ $? = 1 ]; then
+    echo 'alias clipboard="xsel -i --clipboard"' >> ~/.zshrc
+  fi
+
+  cat ~/.zshrc | grep '.sdkman' > /dev/null
+  if [ $? = 1 ]; then
+    echo '[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
+  fi
+
+  cat ~/.zshrc | grep '.nvm' > /dev/null      
+  if [ $? = 1 ]; then
+    echo '[ -s "${HOME}/.nvm/nvm.sh" ] && \. "${HOME}/.nvm/nvm.sh"' >> ~/.zshrc
+    echo '[ -s "${HOME}/.nvm/bash_completion" ] && \. "${HOME}/.nvm/bash_completion"' >> ~/.zshrc
+  fi
 }
 
 function configure_git() {
@@ -45,12 +94,12 @@ package.lock" > ~/.gitignore && \
         git config --global difftool.prompt false && \
         git config --global merge.tool meld && \
         git config --global mergetool.keepbackup false && \
-        git config --global core.editor "vim" && \
+        git config --global core.editor "micro" && \
         git config --global core.commentchar "@" && \
         git config --global http.postBuffer 524288000 && \
         git config --global http.sslVerify false && \
         git config --global grep.lineNumber true && \
-        git config --global pull.rebase true && \
+        git config --global pull.rebase false && \
         git config --global remote.origin.prune true && \
         git config --global alias.s 'stash --all' && \
         git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
@@ -142,12 +191,11 @@ function install_meld() {
 }
 
 function init_sdkman() {
-  SDKMAN_DIR=$HOME/.sdkman
-  [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+  [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
 }
 
 function install_sdkman() {
-  if ! [ -x "$SDKMAN_DIR" ]; then
+  if ! [ -x "${HOME}/.sdkman" ]; then
     echo "Installing SDKMan..."
     cd ~ && curl -s "https://get.sdkman.io" | bash
   else
@@ -175,13 +223,12 @@ function install_visualvm() {
 }
 
 function init_nvm() {
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  [ -s "${HOME}/.nvm/nvm.sh" ] && \. "${HOME}/.nvm/nvm.sh"
+  [ -s "${HOME}/.nvm/bash_completion" ] && \. "${HOME}/.nvm/bash_completion"
 }
 
 function install_nvm() {
-  if ! [ -x "$NVM_DIR" ]; then
+  if ! [ -x "${HOME}/.nvm" ]; then
     echo "Installing NVM..."
     cd ~ && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash && source ~/.bashrc
     init_nvm
@@ -398,7 +445,9 @@ function main() {
   install_helm3 && \
   install_micro && \
   install_code && \
-  install_zsh
+  install_zsh && \
+  configure_bash && \
+  configure_zsh
 
   [ $INSTALL_GOLANG = "y" ] && install_golang
   [ $INSTALL_VIRTUALBOX = "y" ] && install_virtualbox
