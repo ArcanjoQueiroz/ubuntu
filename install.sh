@@ -200,13 +200,17 @@ function install_npm() {
 }
 
 function install_docker() {
-  echo "Installing Docker..."
-  sudo apt-get update && sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common && \
-  cd ~ && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
-  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable" && \
-  sudo apt-get update && \
-  sudo apt-get -y install docker-ce docker-compose
-  sudo usermod -aG docker $CURRENT_USER
+  if ! [ -x "$(command -v docker)" ]; then
+    echo "Installing Docker..."
+    sudo apt-get update && sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common && \
+    cd ~ && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable" && \
+    sudo apt-get update && \
+    sudo apt-get -y install docker-ce docker-compose
+    sudo usermod -aG docker $CURRENT_USER
+  else
+    echo "Docker is already installed"
+  fi
 }
 
 function install_docker_compose() {
@@ -230,14 +234,14 @@ function install_eclipse() {
         echo "Eclipse File already downloaded";
       else
         echo "Downloading Eclipse Java EE ...";
-        cd ~ && wget -O eclipse-jee.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-12/R/eclipse-jee-2020-12-R-linux-gtk-x86_64.tar.gz'
+        wget -O eclipse-jee.tar.gz https://www.eclipse.org/downloads/download.php\?file\=/technology/epp/downloads/release/2020-12/R/eclipse-jee-2020-12-R-linux-gtk-x86_64.tar.gz\&r\=1
       fi
 
       if [ -d "${TARGET_DIRECTORY}/eclipse" ]; then
         echo "Eclipse was already installed"
       else
         echo "Extracting Eclipse Java EE ..."
-        cd ~ && tar -xvzf ${TARGET_DIRECTORY}/eclipse-jee.tar.gz && \
+        tar -xvzf ${TARGET_DIRECTORY}/eclipse-jee.tar.gz && \
           rm ${TARGET_DIRECTORY}/eclipse-jee.tar.gz
 
         echo "Configuring eclipse.ini..."
@@ -327,7 +331,7 @@ function install_zsh() {
 }
 
 function install_golang() {
-  if ! [ -x "$(which go)" ]; then
+  if ! [ -d "/usr/local/go" ]; then
     echo "Installing Golang..."
     GO_VERSION=go1.16
     cd ~
@@ -376,7 +380,6 @@ function main() {
   [ -z "$INSTALL_VIRTUALBOX" ] && INSTALL_VIRTUALBOX="y"
   [ -z "$INSTALL_GOLANG" ] && INSTALL_GOLANG="y"
 
-
   install_libraries && \
   install_terminator && \
   install_vim && \
@@ -397,10 +400,10 @@ function main() {
   install_code && \
   install_zsh
 
-  [ $INSTALL_GOLANG = "y" ] install_golang
+  [ $INSTALL_GOLANG = "y" ] && install_golang
   [ $INSTALL_VIRTUALBOX = "y" ] && install_virtualbox
 
-  echo "Installation was finished. Reboot your system and happy coding...!!!" && \
+  echo "Installation was finished. Reboot your system and happy coding...!!!"
   echo "Tip: Go to https://ohmyz.sh/ and install Oh My Zsh!! :D"
 }
 
