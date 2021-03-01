@@ -58,17 +58,6 @@ function configure_zsh() {
   if [ $? = 1 ]; then
     echo 'alias clipboard="xsel -i --clipboard"' >> ~/.zshrc
   fi
-
-  cat ~/.zshrc | grep '.sdkman' > /dev/null
-  if [ $? = 1 ]; then
-    echo '[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
-  fi
-
-  cat ~/.zshrc | grep '.nvm' > /dev/null      
-  if [ $? = 1 ]; then
-    echo '[ -s "${HOME}/.nvm/nvm.sh" ] && \. "${HOME}/.nvm/nvm.sh"' >> ~/.zshrc
-    echo '[ -s "${HOME}/.nvm/bash_completion" ] && \. "${HOME}/.nvm/bash_completion"' >> ~/.zshrc
-  fi
 }
 
 function configure_git() {

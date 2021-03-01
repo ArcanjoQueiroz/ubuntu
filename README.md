@@ -23,6 +23,18 @@ or
 wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install.sh' && chmod u+x install.sh && ./install.sh
 ```
 
+You can install *Oh my Zsh!* using the following script:
+
+```sh
+curl -s 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install_ohmyzsh.sh' | bash
+```
+
+or
+
+```sh
+wget --no-cache 'https://raw.githubusercontent.com/ArcanjoQueiroz/ubuntu/master/install_ohmyzsh.sh' && chmod u+x install_ohmyzsh.sh && ./install_ohmyzsh.sh
+```
+
 ### What does the script install?
 
 *Install.sh* installs the following tools:
