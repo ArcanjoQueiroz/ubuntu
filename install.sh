@@ -6,7 +6,7 @@ function configure_bash() {
   echo "Configuring Bash..."
 
   cat ~/.bash_aliases | grep 'function docker-remove' > /dev/null
-  if [ $? = 1] ; then
+  if [ $? = 1 ]; then
     echo 'function docker-remove() { CONTAINER_IDS=$(docker ps -a -q); IMAGE_IDS=$(docker images -q); VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1); NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }"); ! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS; ! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS; ! [ -z $VOLUMES ] && docker volume rm $VOLUMES; ! [ -z $NETWORKS ] && docker network rm $NETWORKS}' >> ~/.bash_aliases
   fi
 
@@ -35,7 +35,7 @@ function configure_zsh() {
   echo "Configuring Zsh..."
 
   cat ~/.zshrc | grep 'function docker-remove' > /dev/null
-  if [ $? = 1] ; then
+  if [ $? = 1 ]; then
     echo 'function docker-remove() { CONTAINER_IDS=$(docker ps -a -q); IMAGE_IDS=$(docker images -q); VOLUMES=$(docker volume ls -f "dangling=true" | head -n -1); NETWORKS=$(docker network ls | grep -v "NETWORK" -q | awk "//{ print $1 }"); ! [ -z $CONTAINER_IDS ] && docker stop $CONTAINER_IDS && docker rm -f $CONTAINER_IDS; ! [ -z $IMAGE_IDS ] && docker rmi -f $IMAGE_IDS; ! [ -z $VOLUMES ] && docker volume rm $VOLUMES; ! [ -z $NETWORKS ] && docker network rm $NETWORKS}' >> ~/.zshrc
   fi
 
